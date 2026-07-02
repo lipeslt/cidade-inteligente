@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Conecta Boa Esperança",
+    "slug": "conecta-boa-esperanca",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "conecta-boa-esperanca",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "platforms": ["ios", "android"],
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permitir acesso à localização para capturar coordenadas GPS do problema reportado."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permitir acesso às fotos para anexar imagens à solicitação.",
+          "cameraPermission": "Permitir acesso à câmera para tirar fotos do problema reportado."
+        }
+      ]
+    ]
+  }
+}

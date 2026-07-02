@@ -3,7 +3,6 @@ import { Image } from 'react-native';
 import { YStack, XStack, Text, Button, Spinner } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { useAuthStore } from '@/stores/authStore';
 import * as authService from '@/services/auth';

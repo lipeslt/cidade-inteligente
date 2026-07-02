@@ -1,11 +1,36 @@
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, ScrollView } from 'tamagui';
-import { Pressable } from 'react-native';
+import { Pressable, Animated, useRef, useEffect } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { useAuthStore } from '@/stores/authStore';
+
+function FadeInView({ delay = 0, children }: { delay?: number; children: React.ReactNode }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 500,
+      delay,
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(translateY, {
+      toValue: 0,
+      duration: 500,
+      delay,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      {children}
+    </FadeInView>
+  );
+}
 
 /**
  * Tela Início — Dashboard com acesso rápido às funcionalidades.
@@ -21,7 +46,7 @@ export default function HomeScreen() {
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
         <YStack flex={1} padding="$5" gap="$6">
           {/* Header */}
-          <Animated.View entering={FadeInUp.duration(600)}>
+          <FadeInView delay={0}>
             <YStack gap="$2" paddingTop="$4">
               <Text fontSize={28} fontWeight="800" color="#1e293b">
                 Olá, {firstName}!
@@ -31,10 +56,10 @@ export default function HomeScreen() {
                 Reporte problemas urbanos e acompanhe suas solicitações.
               </Text>
             </YStack>
-          </Animated.View>
+          </FadeInView>
 
           {/* Quick Actions */}
-          <Animated.View entering={FadeInDown.duration(600).delay(200)}>
+          <FadeInView delay={200}>
             <YStack gap="$3">
               <Text fontSize="$5" fontWeight="700" color="#1e293b">
                 Acesso rápido
@@ -112,10 +137,10 @@ export default function HomeScreen() {
                 </Pressable>
               </XStack>
             </YStack>
-          </Animated.View>
+          </FadeInView>
 
           {/* Info Cards */}
-          <Animated.View entering={FadeInDown.duration(600).delay(400)}>
+          <FadeInView delay={400}>
             <YStack gap="$3">
               <Text fontSize="$5" fontWeight="700" color="#1e293b">
                 Como funciona
@@ -194,7 +219,7 @@ export default function HomeScreen() {
                 </XStack>
               </YStack>
             </YStack>
-          </Animated.View>
+          </FadeInView>
         </YStack>
       </ScrollView>
     </SafeAreaView>

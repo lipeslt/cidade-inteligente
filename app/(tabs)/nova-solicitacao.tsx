@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { Alert, Pressable } from 'react-native';
+import { Alert, Pressable, Animated as RNAnimated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, Input, TextArea, Button, ScrollView, Spinner } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useCatalogStore } from '@/stores/catalogStore';
 import { ErrorMessage, PrioritySelector, PhotoPicker, MapPreview } from '@/components';
@@ -459,7 +458,7 @@ export default function NovaSolicitacaoScreen() {
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
               <YStack gap="$3">
                 {servicos.map((servico, index) => (
-                  <Animated.View key={servico.id_servico} entering={FadeInDown.duration(400).delay(index * 80)}>
+                  <React.Fragment key={servico.id_servico}>
                     <Pressable
                       onPress={() => handleSelectServico(servico)}
                       accessibilityRole="button"
@@ -497,7 +496,7 @@ export default function NovaSolicitacaoScreen() {
                         <Feather name="chevron-right" size={16} color="#94a3b8" />
                       </XStack>
                     </Pressable>
-                  </Animated.View>
+                  </React.Fragment>
                 ))}
               </YStack>
             </ScrollView>
@@ -551,7 +550,7 @@ export default function NovaSolicitacaoScreen() {
           <ScrollView flex={1} showsVerticalScrollIndicator={false}>
             <YStack gap="$3">
               {setores.map((setor, index) => (
-                <Animated.View key={setor.id_setor} entering={FadeInDown.duration(400).delay(index * 80)}>
+                <React.Fragment key={setor.id_setor}>
                   <Pressable
                     onPress={() => handleSelectSetor(setor)}
                     accessibilityRole="button"
@@ -595,7 +594,7 @@ export default function NovaSolicitacaoScreen() {
                       </XStack>
                     </XStack>
                   </Pressable>
-                </Animated.View>
+                </React.Fragment>
               ))}
             </YStack>
           </ScrollView>

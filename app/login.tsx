@@ -1,13 +1,38 @@
-import { useState, useRef, useCallback } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { KeyboardAvoidingView, Platform, Animated as RNAnimated } from 'react-native';
 import { YStack, Text, Input, Button, Spinner } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { useAuthStore } from '@/stores/authStore';
 import { validateLoginForm } from '@/utils/validation';
 import { AppError } from '@/utils/errors';
+
+function FadeInView({ delay = 0, children }: { delay?: number; children: React.ReactNode }) {
+  const opacity = useRef(new RNAnimated.Value(0)).current;
+  const translateY = useRef(new RNAnimated.Value(20)).current;
+
+  useEffect(() => {
+    RNAnimated.timing(opacity, {
+      toValue: 1,
+      duration: 500,
+      delay,
+      useNativeDriver: true,
+    }).start();
+    RNAnimated.timing(translateY, {
+      toValue: 0,
+      duration: 500,
+      delay,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <RNAnimated.View style={{ opacity, transform: [{ translateY }] }}>
+      {children}
+    </RNAnimated.View>
+  );
+}
 
 const LOGIN_TIMEOUT_MS = 15000;
 
@@ -74,7 +99,7 @@ export default function LoginScreen() {
     >
       <YStack flex={1} justifyContent="center" padding="$6" gap="$5">
         {/* Logo / Brand */}
-        <Animated.View entering={FadeInUp.duration(700)}>
+        <FadeInView delay={0}>
           <YStack alignItems="center" gap="$3" marginBottom="$6">
             <YStack
               width={80}
@@ -94,10 +119,10 @@ export default function LoginScreen() {
               Faça login para continuar
             </Text>
           </YStack>
-        </Animated.View>
+        </FadeInView>
 
         {/* Form */}
-        <Animated.View entering={FadeInDown.duration(600).delay(200)}>
+        <FadeInView delay={200}>
           <YStack gap="$4">
             <YStack gap="$2">
               <Text fontSize="$3" fontWeight="500" color="#374151">
@@ -157,11 +182,11 @@ export default function LoginScreen() {
               {isLoading ? <Spinner color="#ffffff" /> : 'Entrar'}
             </Button>
           </YStack>
-        </Animated.View>
+        </FadeInView>
 
         {/* Error */}
         {errorMessage && (
-          <Animated.View entering={FadeInDown.duration(300)}>
+          <FadeInView delay={0}>
             <YStack
               backgroundColor="#fef2f2"
               borderWidth={1}
@@ -177,7 +202,7 @@ export default function LoginScreen() {
                 {errorMessage}
               </Text>
             </YStack>
-          </Animated.View>
+          </FadeInView>
         )}
       </YStack>
     </KeyboardAvoidingView>

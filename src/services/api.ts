@@ -10,7 +10,7 @@ import { AppError, ERROR_MESSAGES, NETWORK_ERROR_MESSAGES } from '@/utils/errors
  * - Response interceptor: classifica erros em tipos (offline, timeout, auth, api, unexpected)
  */
 const apiClient = axios.create({
-  baseURL: 'http://cidadeinteligente.online/conecta_boaesperanca/api',
+  baseURL: 'https://cidadeinteligente.online/conecta_boaesperanca/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

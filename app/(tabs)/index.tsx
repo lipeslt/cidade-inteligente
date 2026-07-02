@@ -28,7 +28,7 @@ function FadeInView({ delay = 0, children }: { delay?: number; children: React.R
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
       {children}
-    </FadeInView>
+    </Animated.View>
   );
 }
 

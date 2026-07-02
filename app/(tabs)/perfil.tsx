@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { Image } from 'react-native';
 import { YStack, XStack, Text, Button, Spinner } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { useAuthStore } from '@/stores/authStore';
 import * as authService from '@/services/auth';
@@ -190,11 +192,17 @@ export default function PerfilScreen() {
           <Button
             onPress={handleLogout}
             disabled={isLoggingOut}
-            theme="red"
+            backgroundColor="#dc2626"
+            color="#ffffff"
+            fontWeight="700"
             size="$5"
+            borderRadius="$4"
+            pressStyle={{ backgroundColor: '#b91c1c', scale: 0.98 }}
+            disabledStyle={{ opacity: 0.6 }}
             accessibilityLabel="Sair da conta"
+            icon={isLoggingOut ? undefined : <Feather name="log-out" size={18} color="#ffffff" />}
           >
-            {isLoggingOut ? <Spinner color="$color" /> : 'Sair'}
+            {isLoggingOut ? <Spinner color="#ffffff" /> : 'Sair'}
           </Button>
         </YStack>
       </YStack>

@@ -1,19 +1,19 @@
 import { useState, useRef, useCallback } from 'react';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import { YStack, Text, Input, Button, Spinner } from 'tamagui';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { useAuthStore } from '@/stores/authStore';
 import { validateLoginForm } from '@/utils/validation';
 import { AppError } from '@/utils/errors';
 
-/** Timeout de 15s para exibir mensagem de falha de conexão */
 const LOGIN_TIMEOUT_MS = 15000;
 
 /**
- * Tela de Login do Conecta Boa Esperança.
- *
- * Valida email/senha client-side antes de submeter.
- * Exibe erros mapeados da API e trata timeout de 15s.
+ * Tela de Login — design profissional com gradiente visual,
+ * ícone de cidade e campos estilizados.
  */
 export default function LoginScreen() {
   const router = useRouter();
@@ -23,15 +23,11 @@ export default function LoginScreen() {
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Ref para cancelar o timeout quando login resolve/rejeita antes de 15s
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleLogin = useCallback(async () => {
-    // Limpa erro anterior
     setErrorMessage(null);
 
-    // Validação client-side
     const validation = validateLoginForm(email, senha);
     if (!validation.valid) {
       setErrorMessage(validation.errors.join('. '));
@@ -40,7 +36,6 @@ export default function LoginScreen() {
 
     setIsLoading(true);
 
-    // Configura timeout de 15s
     let timedOut = false;
     timeoutRef.current = setTimeout(() => {
       timedOut = true;
@@ -50,30 +45,20 @@ export default function LoginScreen() {
 
     try {
       await login(email.trim(), senha);
-
-      // Se deu timeout antes de resolver, não navega
       if (timedOut) return;
-
-      // Limpa timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
-
       setIsLoading(false);
       router.replace('/(tabs)');
     } catch (error) {
-      // Se deu timeout antes de rejeitar, não exibe erro duplicado
       if (timedOut) return;
-
-      // Limpa timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
-
       setIsLoading(false);
-
       if (error instanceof AppError) {
         setErrorMessage(error.message);
       } else {
@@ -83,65 +68,118 @@ export default function LoginScreen() {
   }, [email, senha, login, router]);
 
   return (
-    <YStack flex={1} justifyContent="center" padding="$6" backgroundColor="$background" gap="$4">
-      {/* Título */}
-      <YStack alignItems="center" gap="$2" marginBottom="$4">
-        <Text fontSize="$8" fontWeight="700" color="$blue10" textAlign="center">
-          Conecta Boa Esperança
-        </Text>
-        <Text fontSize="$4" color="$gray10" textAlign="center">
-          Faça login para continuar
-        </Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: '#ffffff' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <YStack flex={1} justifyContent="center" padding="$6" gap="$5">
+        {/* Logo / Brand */}
+        <Animated.View entering={FadeInUp.duration(700)}>
+          <YStack alignItems="center" gap="$3" marginBottom="$6">
+            <YStack
+              width={80}
+              height={80}
+              borderRadius={40}
+              backgroundColor="#1e40af"
+              alignItems="center"
+              justifyContent="center"
+              elevation={4}
+            >
+              <Feather name="map-pin" size={36} color="#ffffff" />
+            </YStack>
+            <Text fontSize={24} fontWeight="800" color="#1e293b" textAlign="center">
+              Conecta Boa Esperança
+            </Text>
+            <Text fontSize="$3" color="#64748b" textAlign="center">
+              Faça login para continuar
+            </Text>
+          </YStack>
+        </Animated.View>
+
+        {/* Form */}
+        <Animated.View entering={FadeInDown.duration(600).delay(200)}>
+          <YStack gap="$4">
+            <YStack gap="$2">
+              <Text fontSize="$3" fontWeight="500" color="#374151">
+                E-mail
+              </Text>
+              <Input
+                placeholder="seu@email.com"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+                size="$5"
+                borderWidth={1.5}
+                borderColor="#e2e8f0"
+                borderRadius="$4"
+                backgroundColor="#f8fafc"
+                focusStyle={{ borderColor: '#1e40af', backgroundColor: '#ffffff' }}
+                accessibilityLabel="E-mail"
+              />
+            </YStack>
+
+            <YStack gap="$2">
+              <Text fontSize="$3" fontWeight="500" color="#374151">
+                Senha
+              </Text>
+              <Input
+                placeholder="••••••••"
+                value={senha}
+                onChangeText={setSenha}
+                secureTextEntry
+                editable={!isLoading}
+                size="$5"
+                borderWidth={1.5}
+                borderColor="#e2e8f0"
+                borderRadius="$4"
+                backgroundColor="#f8fafc"
+                focusStyle={{ borderColor: '#1e40af', backgroundColor: '#ffffff' }}
+                accessibilityLabel="Senha"
+              />
+            </YStack>
+
+            <Button
+              onPress={handleLogin}
+              disabled={isLoading}
+              size="$5"
+              backgroundColor="#1e40af"
+              color="#ffffff"
+              fontWeight="700"
+              borderRadius="$4"
+              marginTop="$3"
+              pressStyle={{ backgroundColor: '#1d4ed8', scale: 0.98 }}
+              disabledStyle={{ opacity: 0.6 }}
+              accessibilityLabel="Entrar"
+            >
+              {isLoading ? <Spinner color="#ffffff" /> : 'Entrar'}
+            </Button>
+          </YStack>
+        </Animated.View>
+
+        {/* Error */}
+        {errorMessage && (
+          <Animated.View entering={FadeInDown.duration(300)}>
+            <YStack
+              backgroundColor="#fef2f2"
+              borderWidth={1}
+              borderColor="#fecaca"
+              borderRadius="$4"
+              padding="$3"
+              flexDirection="row"
+              alignItems="center"
+              gap="$2"
+            >
+              <Feather name="alert-circle" size={18} color="#dc2626" />
+              <Text color="#dc2626" fontSize="$3" flex={1}>
+                {errorMessage}
+              </Text>
+            </YStack>
+          </Animated.View>
+        )}
       </YStack>
-
-      {/* Campos do formulário */}
-      <Input
-        placeholder="E-mail"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        editable={!isLoading}
-        accessibilityLabel="E-mail"
-      />
-
-      <Input
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-        editable={!isLoading}
-        accessibilityLabel="Senha"
-      />
-
-      {/* Botão de submit */}
-      <Button
-        onPress={handleLogin}
-        disabled={isLoading}
-        theme="blue"
-        size="$5"
-        marginTop="$2"
-        accessibilityLabel="Entrar"
-      >
-        {isLoading ? <Spinner color="$color" /> : 'Entrar'}
-      </Button>
-
-      {/* Mensagem de erro */}
-      {errorMessage && (
-        <YStack
-          backgroundColor="$red2"
-          borderWidth={1}
-          borderColor="$red6"
-          borderRadius="$4"
-          padding="$3"
-          marginTop="$2"
-        >
-          <Text color="$red10" fontSize="$3" textAlign="center">
-            {errorMessage}
-          </Text>
-        </YStack>
-      )}
-    </YStack>
+    </KeyboardAvoidingView>
   );
 }

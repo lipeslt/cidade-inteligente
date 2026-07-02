@@ -1,14 +1,14 @@
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { YStack, XStack, Text, Button, Card, ScrollView } from 'tamagui';
+import { YStack, XStack, Text, ScrollView } from 'tamagui';
+import { Pressable } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 import { useAuthStore } from '@/stores/authStore';
 
 /**
- * Tela Início (Home/Dashboard).
- *
- * Exibe boas-vindas ao usuário autenticado com acesso rápido
- * às funcionalidades principais do app.
+ * Tela Início — Dashboard com acesso rápido às funcionalidades.
  */
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
@@ -18,97 +18,183 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
-      <ScrollView flex={1}>
-        <YStack flex={1} padding="$4" gap="$5">
-          {/* Boas-vindas */}
-          <YStack gap="$2" paddingTop="$4">
-            <Text fontSize="$8" fontWeight="700" color="$blue10">
-              Olá, {firstName}!
-            </Text>
-            <Text fontSize="$4" color="$gray10" lineHeight="$4">
-              Bem-vindo ao Conecta Boa Esperança. Utilize o app para reportar
-              problemas urbanos e acompanhar suas solicitações.
-            </Text>
-          </YStack>
+      <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+        <YStack flex={1} padding="$5" gap="$6">
+          {/* Header */}
+          <Animated.View entering={FadeInUp.duration(600)}>
+            <YStack gap="$2" paddingTop="$4">
+              <Text fontSize={28} fontWeight="800" color="#1e293b">
+                Olá, {firstName}!
+              </Text>
+              <Text fontSize="$4" color="#64748b" lineHeight={22}>
+                Bem-vindo ao Conecta Boa Esperança.{'\n'}
+                Reporte problemas urbanos e acompanhe suas solicitações.
+              </Text>
+            </YStack>
+          </Animated.View>
 
-          {/* Ações rápidas */}
-          <YStack gap="$3">
-            <Text fontSize="$5" fontWeight="600" color="$gray12">
-              Acesso rápido
-            </Text>
+          {/* Quick Actions */}
+          <Animated.View entering={FadeInDown.duration(600).delay(200)}>
+            <YStack gap="$3">
+              <Text fontSize="$5" fontWeight="700" color="#1e293b">
+                Acesso rápido
+              </Text>
 
-            <XStack gap="$3" flexWrap="wrap">
-              {/* Card Nova Solicitação */}
-              <Card
-                flex={1}
-                minWidth={140}
-                bordered
-                elevate
-                size="$4"
-                backgroundColor="$blue2"
-                pressStyle={{ scale: 0.97, opacity: 0.9 }}
-                onPress={() => router.push('/(tabs)/nova-solicitacao')}
-                accessibilityLabel="Nova Solicitação"
-                accessibilityRole="button"
-              >
-                <Card.Header padded>
-                  <YStack gap="$2" alignItems="center">
-                    <Text fontSize={32}>📝</Text>
-                    <Text
-                      fontSize="$4"
-                      fontWeight="600"
-                      color="$blue10"
-                      textAlign="center"
+              <XStack gap="$3">
+                {/* Nova Solicitação */}
+                <Pressable
+                  style={{ flex: 1 }}
+                  onPress={() => router.push('/(tabs)/nova-solicitacao')}
+                >
+                  <YStack
+                    flex={1}
+                    backgroundColor="#eff6ff"
+                    borderRadius="$5"
+                    padding="$4"
+                    alignItems="center"
+                    gap="$3"
+                    borderWidth={1}
+                    borderColor="#bfdbfe"
+                    pressStyle={{ scale: 0.97, opacity: 0.9 }}
+                  >
+                    <YStack
+                      width={56}
+                      height={56}
+                      borderRadius={28}
+                      backgroundColor="#1e40af"
+                      alignItems="center"
+                      justifyContent="center"
                     >
+                      <Feather name="edit-3" size={24} color="#ffffff" />
+                    </YStack>
+                    <Text fontSize="$4" fontWeight="600" color="#1e40af" textAlign="center">
                       Nova Solicitação
                     </Text>
-                    <Text
-                      fontSize="$2"
-                      color="$gray10"
-                      textAlign="center"
-                    >
+                    <Text fontSize="$2" color="#64748b" textAlign="center">
                       Reportar um problema
                     </Text>
                   </YStack>
-                </Card.Header>
-              </Card>
+                </Pressable>
 
-              {/* Card Minhas Solicitações */}
-              <Card
-                flex={1}
-                minWidth={140}
-                bordered
-                elevate
-                size="$4"
-                backgroundColor="$green2"
-                pressStyle={{ scale: 0.97, opacity: 0.9 }}
-                onPress={() => router.push('/(tabs)/minhas-solicitacoes')}
-                accessibilityLabel="Minhas Solicitações"
-                accessibilityRole="button"
-              >
-                <Card.Header padded>
-                  <YStack gap="$2" alignItems="center">
-                    <Text fontSize={32}>📋</Text>
-                    <Text
-                      fontSize="$4"
-                      fontWeight="600"
-                      color="$green10"
-                      textAlign="center"
+                {/* Minhas Solicitações */}
+                <Pressable
+                  style={{ flex: 1 }}
+                  onPress={() => router.push('/(tabs)/minhas-solicitacoes')}
+                >
+                  <YStack
+                    flex={1}
+                    backgroundColor="#f0fdf4"
+                    borderRadius="$5"
+                    padding="$4"
+                    alignItems="center"
+                    gap="$3"
+                    borderWidth={1}
+                    borderColor="#bbf7d0"
+                    pressStyle={{ scale: 0.97, opacity: 0.9 }}
+                  >
+                    <YStack
+                      width={56}
+                      height={56}
+                      borderRadius={28}
+                      backgroundColor="#166534"
+                      alignItems="center"
+                      justifyContent="center"
                     >
+                      <Feather name="clipboard" size={24} color="#ffffff" />
+                    </YStack>
+                    <Text fontSize="$4" fontWeight="600" color="#166534" textAlign="center">
                       Minhas Solicitações
                     </Text>
-                    <Text
-                      fontSize="$2"
-                      color="$gray10"
-                      textAlign="center"
-                    >
+                    <Text fontSize="$2" color="#64748b" textAlign="center">
                       Acompanhar status
                     </Text>
                   </YStack>
-                </Card.Header>
-              </Card>
-            </XStack>
-          </YStack>
+                </Pressable>
+              </XStack>
+            </YStack>
+          </Animated.View>
+
+          {/* Info Cards */}
+          <Animated.View entering={FadeInDown.duration(600).delay(400)}>
+            <YStack gap="$3">
+              <Text fontSize="$5" fontWeight="700" color="#1e293b">
+                Como funciona
+              </Text>
+
+              <YStack
+                backgroundColor="#ffffff"
+                borderRadius="$4"
+                padding="$4"
+                gap="$4"
+                borderWidth={1}
+                borderColor="#e2e8f0"
+                elevation={2}
+              >
+                <XStack gap="$3" alignItems="center">
+                  <YStack
+                    width={40}
+                    height={40}
+                    borderRadius={20}
+                    backgroundColor="#dbeafe"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Feather name="map-pin" size={18} color="#1e40af" />
+                  </YStack>
+                  <YStack flex={1}>
+                    <Text fontSize="$3" fontWeight="600" color="#1e293b">
+                      Identifique o problema
+                    </Text>
+                    <Text fontSize="$2" color="#64748b">
+                      Selecione o setor e descreva o problema
+                    </Text>
+                  </YStack>
+                </XStack>
+
+                <XStack gap="$3" alignItems="center">
+                  <YStack
+                    width={40}
+                    height={40}
+                    borderRadius={20}
+                    backgroundColor="#dcfce7"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Feather name="camera" size={18} color="#166534" />
+                  </YStack>
+                  <YStack flex={1}>
+                    <Text fontSize="$3" fontWeight="600" color="#1e293b">
+                      Registre com fotos
+                    </Text>
+                    <Text fontSize="$2" color="#64748b">
+                      Tire fotos para comprovar o problema
+                    </Text>
+                  </YStack>
+                </XStack>
+
+                <XStack gap="$3" alignItems="center">
+                  <YStack
+                    width={40}
+                    height={40}
+                    borderRadius={20}
+                    backgroundColor="#fef3c7"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Feather name="bell" size={18} color="#92400e" />
+                  </YStack>
+                  <YStack flex={1}>
+                    <Text fontSize="$3" fontWeight="600" color="#1e293b">
+                      Acompanhe o status
+                    </Text>
+                    <Text fontSize="$2" color="#64748b">
+                      Veja o andamento da sua solicitação
+                    </Text>
+                  </YStack>
+                </XStack>
+              </YStack>
+            </YStack>
+          </Animated.View>
         </YStack>
       </ScrollView>
     </SafeAreaView>

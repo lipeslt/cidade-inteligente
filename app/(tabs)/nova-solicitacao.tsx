@@ -3,6 +3,8 @@ import { Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, Input, TextArea, Button, ScrollView, Spinner } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useCatalogStore } from '@/stores/catalogStore';
 import { ErrorMessage, PrioritySelector, PhotoPicker, MapPreview } from '@/components';
@@ -225,17 +227,18 @@ export default function NovaSolicitacaoScreen() {
         <ScrollView flex={1} showsVerticalScrollIndicator={false}>
           <YStack flex={1} padding="$4" gap="$4">
             {/* Back button */}
-            <Button
-              size="$3"
-              theme="gray"
+            <Pressable
               onPress={() => {
                 setSelectedServico(null);
                 setStep('servicos');
               }}
               accessibilityLabel="Voltar para serviços"
             >
-              ← Voltar
-            </Button>
+              <XStack alignItems="center" gap="$2">
+                <Feather name="arrow-left" size={20} color="#1e293b" />
+                <Text fontSize="$3" color="#1e293b" fontWeight="500">Voltar</Text>
+              </XStack>
+            </Pressable>
 
             {/* Service display (read-only) */}
             {selectedServico && (
@@ -376,10 +379,15 @@ export default function NovaSolicitacaoScreen() {
 
             {/* Submit button */}
             <Button
-              size="$4"
-              theme="blue"
+              size="$5"
+              backgroundColor="#1e40af"
+              color="#ffffff"
+              fontWeight="700"
+              borderRadius="$4"
               onPress={handleSubmit}
               disabled={isSubmitting}
+              pressStyle={{ backgroundColor: '#1d4ed8', scale: 0.98 }}
+              disabledStyle={{ opacity: 0.6 }}
               accessibilityLabel="Enviar solicitação"
               marginTop="$2"
               marginBottom="$4"
@@ -399,19 +407,23 @@ export default function NovaSolicitacaoScreen() {
         <YStack flex={1} padding="$4" gap="$4">
           {/* Header com botão voltar */}
           <XStack alignItems="center" gap="$3">
-            <Button
-              size="$3"
-              theme="gray"
-              onPress={handleBackToSetores}
-              accessibilityLabel="Voltar para setores"
-            >
-              ← Voltar
-            </Button>
+            <Pressable onPress={handleBackToSetores} accessibilityLabel="Voltar para setores">
+              <YStack
+                width={40}
+                height={40}
+                borderRadius={20}
+                backgroundColor="#f1f5f9"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Feather name="arrow-left" size={20} color="#1e293b" />
+              </YStack>
+            </Pressable>
             <YStack flex={1}>
-              <Text fontSize="$5" fontWeight="600" color="$gray12" numberOfLines={1}>
+              <Text fontSize={20} fontWeight="700" color="#1e293b" numberOfLines={1}>
                 {selectedSetor?.nome ?? 'Serviços'}
               </Text>
-              <Text fontSize="$2" color="$gray8">
+              <Text fontSize="$2" color="#64748b">
                 Selecione um serviço
               </Text>
             </YStack>
@@ -420,8 +432,8 @@ export default function NovaSolicitacaoScreen() {
           {/* Loading */}
           {isLoading && (
             <YStack flex={1} justifyContent="center" alignItems="center">
-              <Spinner size="large" color="$blue10" />
-              <Text marginTop="$3" color="$gray10">
+              <Spinner size="large" color="#1e40af" />
+              <Text marginTop="$3" color="#64748b">
                 Carregando serviços...
               </Text>
             </YStack>
@@ -435,7 +447,8 @@ export default function NovaSolicitacaoScreen() {
           {/* Empty state */}
           {!isLoading && !error && servicos.length === 0 && (
             <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
-              <Text fontSize="$5" color="$gray10" textAlign="center">
+              <Feather name="inbox" size={48} color="#94a3b8" />
+              <Text fontSize="$4" color="#64748b" textAlign="center" marginTop="$3">
                 Nenhum serviço disponível neste setor
               </Text>
             </YStack>
@@ -444,30 +457,47 @@ export default function NovaSolicitacaoScreen() {
           {/* Lista de serviços */}
           {!isLoading && !error && servicos.length > 0 && (
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-              <YStack gap="$2">
-                {servicos.map((servico) => (
-                  <Pressable
-                    key={servico.id_servico}
-                    onPress={() => handleSelectServico(servico)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Selecionar serviço ${servico.nome}`}
-                  >
-                    <YStack
-                      backgroundColor="$background"
-                      borderWidth={1}
-                      borderColor="$gray4"
-                      borderRadius="$4"
-                      padding="$4"
-                      pressStyle={{ backgroundColor: '$blue2' }}
+              <YStack gap="$3">
+                {servicos.map((servico, index) => (
+                  <Animated.View key={servico.id_servico} entering={FadeInDown.duration(400).delay(index * 80)}>
+                    <Pressable
+                      onPress={() => handleSelectServico(servico)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Selecionar serviço ${servico.nome}`}
                     >
-                      <Text fontSize="$4" fontWeight="600" color="$gray12">
-                        {servico.nome}
-                      </Text>
-                      <Text fontSize="$3" color="$gray8" marginTop="$1">
-                        {servico.nome_setor}
-                      </Text>
-                    </YStack>
-                  </Pressable>
+                      <XStack
+                        backgroundColor="#ffffff"
+                        borderWidth={1}
+                        borderColor="#e2e8f0"
+                        borderRadius="$4"
+                        padding="$4"
+                        alignItems="center"
+                        gap="$3"
+                        elevation={1}
+                        pressStyle={{ backgroundColor: '#f1f5f9', borderColor: '#1e40af' }}
+                      >
+                        <YStack
+                          width={40}
+                          height={40}
+                          borderRadius={20}
+                          backgroundColor="#dcfce7"
+                          alignItems="center"
+                          justifyContent="center"
+                        >
+                          <Feather name="tool" size={18} color="#166534" />
+                        </YStack>
+                        <YStack flex={1}>
+                          <Text fontSize="$4" fontWeight="600" color="#1e293b">
+                            {servico.nome}
+                          </Text>
+                          <Text fontSize="$2" color="#94a3b8" marginTop={2}>
+                            {servico.nome_setor}
+                          </Text>
+                        </YStack>
+                        <Feather name="chevron-right" size={16} color="#94a3b8" />
+                      </XStack>
+                    </Pressable>
+                  </Animated.View>
                 ))}
               </YStack>
             </ScrollView>
@@ -483,10 +513,10 @@ export default function NovaSolicitacaoScreen() {
       <YStack flex={1} padding="$4" gap="$4">
         {/* Header */}
         <YStack gap="$1" paddingTop="$2">
-          <Text fontSize="$6" fontWeight="700" color="$blue10">
+          <Text fontSize={24} fontWeight="800" color="#1e293b">
             Nova Solicitação
           </Text>
-          <Text fontSize="$3" color="$gray10">
+          <Text fontSize="$3" color="#64748b">
             Selecione o setor responsável
           </Text>
         </YStack>
@@ -494,8 +524,8 @@ export default function NovaSolicitacaoScreen() {
         {/* Loading */}
         {isLoading && (
           <YStack flex={1} justifyContent="center" alignItems="center">
-            <Spinner size="large" color="$blue10" />
-            <Text marginTop="$3" color="$gray10">
+            <Spinner size="large" color="#1e40af" />
+            <Text marginTop="$3" color="#64748b">
               Carregando setores...
             </Text>
           </YStack>
@@ -509,7 +539,8 @@ export default function NovaSolicitacaoScreen() {
         {/* Empty state */}
         {!isLoading && !error && setores.length === 0 && (
           <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
-            <Text fontSize="$5" color="$gray10" textAlign="center">
+            <Feather name="inbox" size={48} color="#94a3b8" />
+            <Text fontSize="$4" color="#64748b" textAlign="center" marginTop="$3">
               Nenhum setor disponível no momento
             </Text>
           </YStack>
@@ -518,45 +549,53 @@ export default function NovaSolicitacaoScreen() {
         {/* Lista de setores */}
         {!isLoading && !error && setores.length > 0 && (
           <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-            <YStack gap="$2">
-              {setores.map((setor) => (
-                <Pressable
-                  key={setor.id_setor}
-                  onPress={() => handleSelectSetor(setor)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Selecionar setor ${setor.nome}`}
-                >
-                  <YStack
-                    backgroundColor="$background"
-                    borderWidth={1}
-                    borderColor="$gray4"
-                    borderRadius="$4"
-                    padding="$4"
-                    pressStyle={{ backgroundColor: '$blue2' }}
+            <YStack gap="$3">
+              {setores.map((setor, index) => (
+                <Animated.View key={setor.id_setor} entering={FadeInDown.duration(400).delay(index * 80)}>
+                  <Pressable
+                    onPress={() => handleSelectSetor(setor)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Selecionar setor ${setor.nome}`}
                   >
-                    <XStack justifyContent="space-between" alignItems="center">
+                    <XStack
+                      backgroundColor="#ffffff"
+                      borderWidth={1}
+                      borderColor="#e2e8f0"
+                      borderRadius="$4"
+                      padding="$4"
+                      alignItems="center"
+                      gap="$3"
+                      elevation={1}
+                      pressStyle={{ backgroundColor: '#f1f5f9', borderColor: '#1e40af' }}
+                    >
+                      <YStack
+                        width={44}
+                        height={44}
+                        borderRadius={22}
+                        backgroundColor="#dbeafe"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <Feather name="briefcase" size={20} color="#1e40af" />
+                      </YStack>
                       <YStack flex={1}>
-                        <Text fontSize="$4" fontWeight="600" color="$gray12">
+                        <Text fontSize="$4" fontWeight="600" color="#1e293b">
                           {setor.nome}
                         </Text>
-                        <Text fontSize="$3" color="$gray8" marginTop="$1">
+                        <Text fontSize="$2" color="#94a3b8" marginTop={2}>
                           {setor.sigla}
                         </Text>
                       </YStack>
-                      <YStack
-                        backgroundColor="$blue2"
-                        borderRadius="$3"
-                        paddingHorizontal="$3"
-                        paddingVertical="$1"
-                      >
-                        <Text fontSize="$2" color="$blue10" fontWeight="500">
+                      <XStack alignItems="center" gap="$1">
+                        <Text fontSize="$2" color="#1e40af" fontWeight="500">
                           {setor.total_servicos}{' '}
                           {setor.total_servicos === 1 ? 'serviço' : 'serviços'}
                         </Text>
-                      </YStack>
+                        <Feather name="chevron-right" size={16} color="#94a3b8" />
+                      </XStack>
                     </XStack>
-                  </YStack>
-                </Pressable>
+                  </Pressable>
+                </Animated.View>
               ))}
             </YStack>
           </ScrollView>

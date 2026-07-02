@@ -1,25 +1,33 @@
-import { Tabs } from 'expo-router'
-import { Text } from 'react-native'
+import { Tabs } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 /**
  * Layout de navegação por abas (bottom tabs).
- * Configura 4 abas: Início, Nova Solicitação, Minhas Solicitações e Perfil.
- * A rota minhas-solicitacoes/[id] é ocultada como aba (navegação interna no stack).
+ * Usa ícones Feather para visual profissional e limpo.
  */
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#9ca3af',
+        tabBarActiveTintColor: '#1e40af',
+        tabBarInactiveTintColor: '#94a3b8',
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopColor: '#e5e7eb',
+          borderTopColor: '#e2e8f0',
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 4,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '500',
+          fontWeight: '600',
         },
       }}
     >
@@ -27,8 +35,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>🏠</Text>
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="home" size={size} color={color} />
           ),
         }}
       />
@@ -36,17 +44,17 @@ export default function TabLayout() {
         name="nova-solicitacao"
         options={{
           title: 'Nova Solicitação',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>➕</Text>
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="plus-circle" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="minhas-solicitacoes"
         options={{
-          title: 'Minhas Solicitações',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>📋</Text>
+          title: 'Solicitações',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="list" size={size} color={color} />
           ),
         }}
       />
@@ -54,11 +62,11 @@ export default function TabLayout() {
         name="perfil"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color }}>👤</Text>
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="user" size={size} color={color} />
           ),
         }}
       />
     </Tabs>
-  )
+  );
 }

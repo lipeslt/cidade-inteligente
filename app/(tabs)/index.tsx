@@ -1,7 +1,8 @@
+import { useRef, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, ScrollView } from 'tamagui';
-import { Pressable, Animated, useRef, useEffect } from 'react-native';
+import { Pressable, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { useAuthStore } from '@/stores/authStore';

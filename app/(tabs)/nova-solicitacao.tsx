@@ -476,7 +476,7 @@ export default function NovaSolicitacaoScreen() {
               </YStack>
             </TouchableOpacity>
             <YStack f={1}>
-              <Text fontSize={20} fontWeight="700" color="#1e293b" numberOfLines={1}>
+              <Text fontSize={20} fontWeight="700" color="#1e293b" numberOfLines={2}>
                 {selectedSetor?.nome ?? 'Serviços'}
               </Text>
               <Text fontSize="$2" color="#64748b">
@@ -625,7 +625,7 @@ export default function NovaSolicitacaoScreen() {
                         <Feather name={icon.name as any} size={20} color={icon.color} />
                       </View>
                       <YStack f={1}>
-                        <Text fontSize="$4" fontWeight="600" color="#1e293b">
+                        <Text fontSize="$4" fontWeight="600" color="#1e293b" numberOfLines={2}>
                           {setor.nome}
                         </Text>
                         <Text fontSize="$2" color="#94a3b8" mt={2}>

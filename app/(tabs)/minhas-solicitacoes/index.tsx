@@ -117,7 +117,7 @@ export default function MinhasSolicitacoesScreen() {
   const renderEmpty = useCallback(() => {
     if (isLoading) return null;
     return (
-      <YStack f={1} jc="center" ai="center" p="$8">
+      <View style={styles.emptyContainer}>
         <View style={styles.emptyIconContainer}>
           <Feather name="inbox" size={48} color="#94a3b8" />
         </View>
@@ -129,7 +129,7 @@ export default function MinhasSolicitacoesScreen() {
             ? 'Tente outro filtro ou crie uma nova solicitação'
             : 'Suas solicitações aparecerão aqui'}
         </Text>
-      </YStack>
+      </View>
     );
   }, [isLoading, selectedStatus]);
 
@@ -261,5 +261,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+    minHeight: 400,
   },
 });

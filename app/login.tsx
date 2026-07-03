@@ -105,7 +105,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       {/* Green gradient background */}
       <LinearGradient
-        colors={['#059669', '#10b981', '#34d399']}
+        colors={['#1e3a5f', '#1e40af', '#2563eb']}
         style={styles.topSection}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -130,8 +130,7 @@ export default function LoginScreen() {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.appName}>Conecta Sorriso</Text>
-          <Text style={styles.appTagline}>Cidade Inteligente</Text>
+          <Text style={styles.appName}>Cidade Inteligente</Text>
         </Animated.View>
       </LinearGradient>
 
@@ -235,9 +234,9 @@ export default function LoginScreen() {
               onPress={handleLogin}
               disabled={isLoading}
               height={50}
-              backgroundColor="#059669"
+              backgroundColor="#1e40af"
               borderRadius={25}
-              pressStyle={{ backgroundColor: '#047857', scale: 0.98 }}
+              pressStyle={{ backgroundColor: '#1d4ed8', scale: 0.98 }}
               disabledStyle={{ opacity: 0.7 }}
               marginTop="$2"
               accessibilityLabel="Entrar"
@@ -259,7 +258,7 @@ export default function LoginScreen() {
 
           {/* Footer */}
           <Text style={styles.footer}>
-            Prefeitura Municipal de Sorriso
+            Prefeitura Municipal de Sorriso - MT
           </Text>
         </Animated.View>
       </KeyboardAvoidingView>
@@ -312,22 +311,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 12,
+    width: 160,
+    height: 160,
+    marginBottom: 16,
   },
   appName: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '800',
     color: '#ffffff',
     letterSpacing: -0.5,
-  },
-  appTagline: {
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 4,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
   },
   bottomSection: {
     flex: 1,
@@ -349,7 +341,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#059669',
+    color: '#1e40af',
   },
   greetingSub: {
     fontSize: 15,

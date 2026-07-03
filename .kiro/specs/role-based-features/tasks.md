@@ -108,8 +108,8 @@ This plan implements role-specific functionality for admin and técnico users in
 - [x] 6. Checkpoint - Ensure new screens render without errors
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Wire role-based tab navigation and home screen
-  - [-] 7.1 Modify `app/(tabs)/_layout.tsx` to support role-based tabs
+- [x] 7. Wire role-based tab navigation and home screen
+  - [x] 7.1 Modify `app/(tabs)/_layout.tsx` to support role-based tabs
     - Import useAuthStore to read user.tipo
     - Import getTabsForRole from @/utils/roles
     - Conditionally render "Painel" tab (bar-chart-2 icon) visible only for admin
@@ -119,7 +119,7 @@ This plan implements role-specific functionality for admin and técnico users in
     - Keep Início and Perfil tabs visible for all roles
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-  - [-] 7.2 Modify `app/(tabs)/index.tsx` to show role-based quick actions
+  - [x] 7.2 Modify `app/(tabs)/index.tsx` to show role-based quick actions
     - Import useAuthStore to read user.tipo
     - Import getHomeQuickActions from @/utils/roles
     - Replace hardcoded quick action cards with dynamic cards from getHomeQuickActions
@@ -129,14 +129,14 @@ This plan implements role-specific functionality for admin and técnico users in
     - Keep existing "Como funciona" section for cidadão only
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
-  - [-] 7.3 Modify `app/(tabs)/minhas-solicitacoes/[id].tsx` to use StatusControls
+  - [x] 7.3 Modify `app/(tabs)/minhas-solicitacoes/[id].tsx` to use StatusControls
     - Replace TecnicoControls import with StatusControls import
     - Use shouldShowStatusControls(user?.tipo) to conditionally render
     - Pass showLocationButton={shouldShowLocationButton(user?.tipo)} prop
     - Remove old user?.tipo === 'tecnico' check
     - _Requirements: 5.1, 6.1, 7.4, 7.5_
 
-- [~] 8. Checkpoint - Ensure navigation and integration work correctly
+- [x] 8. Checkpoint - Ensure navigation and integration work correctly
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ]* 9. Write property tests for store pagination behavior (Properties 10–12)
@@ -150,7 +150,7 @@ This plan implements role-specific functionality for admin and técnico users in
     - **Property 12: No additional loading when on last page**
     - **Validates: Requirements 8.6**
 
-- [~] 10. Final checkpoint - Ensure all tests pass
+- [x] 10. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

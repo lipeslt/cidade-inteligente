@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Slot, useRouter, useSegments, useRootNavigationState } from 'expo-router';
+import { Slot, useRouter, useSegments } from 'expo-router';
 import { TamaguiProvider } from '@tamagui/core';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -15,27 +15,36 @@ export default function RootLayout() {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
-  const navigationState = useRootNavigationState();
+  const [isMounted, setIsMounted] = useState(false);
 
   // Verifica token armazenado ao iniciar o app
   useEffect(() => {
     checkAuth();
   }, []);
 
+  // Marca como montado após o primeiro render
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Redireciona conforme estado de autenticação e rota atual
   useEffect(() => {
     if (isLoading) return;
-    // Espera a navegação estar pronta antes de redirecionar
-    if (!navigationState?.key) return;
+    if (!isMounted) return;
 
     const inAuthGroup = segments[0] === '(tabs)';
 
-    if (!isAuthenticated && inAuthGroup) {
-      router.replace('/login');
-    } else if (isAuthenticated && !inAuthGroup) {
-      router.replace('/(tabs)');
-    }
-  }, [isAuthenticated, isLoading, segments, navigationState?.key]);
+    // Usar setTimeout para garantir que o layout está montado
+    const timeout = setTimeout(() => {
+      if (!isAuthenticated && inAuthGroup) {
+        router.replace('/login');
+      } else if (isAuthenticated && !inAuthGroup) {
+        router.replace('/(tabs)');
+      }
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [isAuthenticated, isLoading, segments, isMounted]);
 
   // Exibe loading fullscreen enquanto verifica autenticação
   if (isLoading) {

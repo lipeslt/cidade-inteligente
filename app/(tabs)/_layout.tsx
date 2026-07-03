@@ -67,9 +67,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="nova-solicitacao"
         options={{
-          title: '',
+          title: 'Nova Solicitação',
           tabBarIcon: ({ focused }) => <CenterTabIcon focused={focused} />,
-          tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen

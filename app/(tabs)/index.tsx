@@ -53,7 +53,7 @@ export default function HomeScreen() {
                 Olá, {firstName}!
               </Text>
               <Text fontSize="$4" color="#64748b" lineHeight={22}>
-                Bem-vindo ao Conecta Boa Esperança.{'\n'}
+                Bem-vindo ao Conecta Sorriso.{'\n'}
                 Reporte problemas urbanos e acompanhe suas solicitações.
               </Text>
             </YStack>

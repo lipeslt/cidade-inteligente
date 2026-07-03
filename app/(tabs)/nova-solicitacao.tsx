@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { Alert, Pressable, Animated as RNAnimated } from 'react-native';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, Input, TextArea, Button, ScrollView, Spinner } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';

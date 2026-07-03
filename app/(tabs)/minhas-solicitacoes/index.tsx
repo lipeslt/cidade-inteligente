@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, ScrollView, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { YStack, XStack, Text, Spinner } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 import { useSolicitacoesStore } from '@/stores/solicitacoesStore';
 import { SolicitacaoCard } from '@/components/SolicitacaoCard';
@@ -16,16 +17,17 @@ import type { Solicitacao, StatusSolicitacao } from '@/types';
 interface FilterOption {
   label: string;
   value: StatusSolicitacao | undefined;
+  icon: keyof typeof Feather.glyphMap;
 }
 
 const STATUS_FILTERS: FilterOption[] = [
-  { label: 'Todos', value: undefined },
-  { label: 'Aberto', value: 'aberto' },
-  { label: 'Em Análise', value: 'em_analise' },
-  { label: 'Em Andamento', value: 'em_andamento' },
-  { label: 'Resolvido', value: 'resolvido' },
-  { label: 'Fechado', value: 'fechado' },
-  { label: 'Cancelado', value: 'cancelado' },
+  { label: 'Todos', value: undefined, icon: 'layers' },
+  { label: 'Aberto', value: 'aberto', icon: 'circle' },
+  { label: 'Em Análise', value: 'em_analise', icon: 'search' },
+  { label: 'Em Andamento', value: 'em_andamento', icon: 'clock' },
+  { label: 'Resolvido', value: 'resolvido', icon: 'check-circle' },
+  { label: 'Fechado', value: 'fechado', icon: 'archive' },
+  { label: 'Cancelado', value: 'cancelado', icon: 'x-circle' },
 ];
 
 /**
@@ -34,7 +36,7 @@ const STATUS_FILTERS: FilterOption[] = [
  * Funcionalidades:
  * - Busca inicial com fetchSolicitacoes() ao montar
  * - Scroll infinito via onEndReached → loadNextPage()
- * - Filtro por status via chips
+ * - Filtro por status via chips horizontais
  * - Indicador de carregamento (centro na carga inicial, rodapé na paginação)
  * - Empty state e error state com retry
  */
@@ -103,7 +105,7 @@ export default function MinhasSolicitacoesScreen() {
   const renderFooter = useCallback(() => {
     if (isLoading && !isInitialLoad) {
       return (
-        <YStack padding="$4" alignItems="center">
+        <YStack p="$4" ai="center">
           <Spinner size="small" color="$blue10" />
         </YStack>
       );
@@ -114,56 +116,81 @@ export default function MinhasSolicitacoesScreen() {
   const renderEmpty = useCallback(() => {
     if (isLoading) return null;
     return (
-      <YStack flex={1} justifyContent="center" alignItems="center" padding="$6">
-        <Text fontSize="$5" color="$gray10" textAlign="center">
+      <YStack f={1} jc="center" ai="center" p="$8">
+        <View style={styles.emptyIconContainer}>
+          <Feather name="inbox" size={48} color="#94a3b8" />
+        </View>
+        <Text fontSize="$5" fontWeight="600" color="#475569" ta="center" mt="$4">
           Nenhuma solicitação encontrada
+        </Text>
+        <Text fontSize="$3" color="#94a3b8" ta="center" mt="$2">
+          {selectedStatus
+            ? 'Tente outro filtro ou crie uma nova solicitação'
+            : 'Suas solicitações aparecerão aqui'}
         </Text>
       </YStack>
     );
-  }, [isLoading]);
+  }, [isLoading, selectedStatus]);
 
   const renderHeader = useCallback(() => (
-    <XStack
-      paddingHorizontal="$2"
-      paddingVertical="$3"
-      gap="$2"
-      flexWrap="wrap"
-    >
-      {STATUS_FILTERS.map((filter) => {
-        const isActive = selectedStatus === filter.value;
-        return (
-          <YStack
-            key={filter.label}
-            pressStyle={{ opacity: 0.7 }}
-            onPress={() => handleStatusFilter(filter.value)}
-            backgroundColor={isActive ? '$blue10' : '$gray3'}
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius="$10"
-            accessibilityRole="button"
-            accessibilityState={{ selected: isActive }}
-            accessibilityLabel={`Filtrar por ${filter.label}`}
-          >
-            <Text
-              fontSize="$3"
-              fontWeight={isActive ? '600' : '400'}
-              color={isActive ? 'white' : '$gray11'}
+    <YStack gap="$3" pb="$2">
+      {/* Page header */}
+      <YStack px="$4" pt="$2" gap="$1">
+        <Text fontSize={24} fontWeight="800" color="#1e293b">
+          Minhas Solicitações
+        </Text>
+        <Text fontSize="$3" color="#64748b">
+          Acompanhe o andamento das suas solicitações
+        </Text>
+      </YStack>
+
+      {/* Filter chips */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.filtersContainer}
+      >
+        {STATUS_FILTERS.map((filter) => {
+          const isActive = selectedStatus === filter.value;
+          return (
+            <TouchableOpacity
+              key={filter.label}
+              onPress={() => handleStatusFilter(filter.value)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isActive }}
+              accessibilityLabel={`Filtrar por ${filter.label}`}
+              style={[
+                styles.filterChip,
+                isActive ? styles.filterChipActive : styles.filterChipInactive,
+              ]}
             >
-              {filter.label}
-            </Text>
-          </YStack>
-        );
-      })}
-    </XStack>
+              <Feather
+                name={filter.icon}
+                size={14}
+                color={isActive ? '#ffffff' : '#64748b'}
+              />
+              <Text
+                fontSize="$3"
+                fontWeight={isActive ? '600' : '400'}
+                color={isActive ? '#ffffff' : '#475569'}
+              >
+                {filter.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </YStack>
   ), [selectedStatus, handleStatusFilter]);
 
   // Estado de carregamento inicial
   if (isInitialLoad && isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-        <YStack flex={1} justifyContent="center" alignItems="center" backgroundColor="$background">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$3" color="$gray10" fontSize="$4">
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+        <YStack f={1} jc="center" ai="center" bg="#f8fafc">
+          <Spinner size="large" color="#1e40af" />
+          <Text mt="$3" color="#64748b" fontSize="$4">
             Carregando solicitações...
           </Text>
         </YStack>
@@ -174,10 +201,10 @@ export default function MinhasSolicitacoesScreen() {
   // Estado de erro
   if (error && solicitacoes.length === 0) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-        <YStack flex={1} backgroundColor="$background">
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+        <YStack f={1} bg="#f8fafc">
           {renderHeader()}
-          <YStack flex={1} justifyContent="center" padding="$4">
+          <YStack f={1} jc="center" p="$4">
             <ErrorMessage message={error} onRetry={handleRetry} />
           </YStack>
         </YStack>
@@ -186,8 +213,8 @@ export default function MinhasSolicitacoesScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <YStack flex={1} backgroundColor="$background">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+      <YStack f={1} bg="#f8fafc">
         <FlatList
           data={solicitacoes}
           keyExtractor={(item) => String(item.id_solicitacao)}
@@ -197,9 +224,41 @@ export default function MinhasSolicitacoesScreen() {
           ListEmptyComponent={renderEmpty}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.3}
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
         />
       </YStack>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  filtersContainer: {
+    paddingHorizontal: 16,
+    gap: 8,
+    flexDirection: 'row',
+  },
+  filterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+  },
+  filterChipActive: {
+    backgroundColor: '#1e40af',
+  },
+  filterChipInactive: {
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#f1f5f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

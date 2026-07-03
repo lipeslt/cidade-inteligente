@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 
 import { useSolicitacoesStore } from '@/stores/solicitacoesStore';
+import { PageLoading } from '@/components/PageLoading';
 import { SolicitacaoCard } from '@/components/SolicitacaoCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import type { Solicitacao, StatusSolicitacao } from '@/types';

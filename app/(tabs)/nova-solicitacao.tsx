@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Alert, Pressable } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, Input, TextArea, Button, ScrollView, Spinner } from 'tamagui';
 import * as ImagePicker from 'expo-image-picker';
@@ -226,7 +226,7 @@ export default function NovaSolicitacaoScreen() {
         <ScrollView flex={1} showsVerticalScrollIndicator={false}>
           <YStack flex={1} padding="$4" gap="$4">
             {/* Back button */}
-            <Pressable
+            <TouchableOpacity activeOpacity={0.7}
               onPress={() => {
                 setSelectedServico(null);
                 setStep('servicos');
@@ -237,7 +237,7 @@ export default function NovaSolicitacaoScreen() {
                 <Feather name="arrow-left" size={20} color="#1e293b" />
                 <Text fontSize="$3" color="#1e293b" fontWeight="500">Voltar</Text>
               </XStack>
-            </Pressable>
+            </TouchableOpacity>
 
             {/* Service display (read-only) */}
             {selectedServico && (
@@ -406,7 +406,7 @@ export default function NovaSolicitacaoScreen() {
         <YStack flex={1} padding="$4" gap="$4">
           {/* Header com botão voltar */}
           <XStack alignItems="center" gap="$3">
-            <Pressable onPress={handleBackToSetores} accessibilityLabel="Voltar para setores">
+            <TouchableOpacity activeOpacity={0.7} onPress={handleBackToSetores} accessibilityLabel="Voltar para setores">
               <YStack
                 width={40}
                 height={40}
@@ -417,7 +417,7 @@ export default function NovaSolicitacaoScreen() {
               >
                 <Feather name="arrow-left" size={20} color="#1e293b" />
               </YStack>
-            </Pressable>
+            </TouchableOpacity>
             <YStack flex={1}>
               <Text fontSize={20} fontWeight="700" color="#1e293b" numberOfLines={1}>
                 {selectedSetor?.nome ?? 'Serviços'}
@@ -459,7 +459,7 @@ export default function NovaSolicitacaoScreen() {
               <YStack gap="$3">
                 {servicos.map((servico, index) => (
                   <React.Fragment key={servico.id_servico}>
-                    <Pressable
+                    <TouchableOpacity activeOpacity={0.7}
                       onPress={() => handleSelectServico(servico)}
                       accessibilityRole="button"
                       accessibilityLabel={`Selecionar serviço ${servico.nome}`}
@@ -473,7 +473,6 @@ export default function NovaSolicitacaoScreen() {
                         alignItems="center"
                         gap="$3"
                         elevation={1}
-                        pressStyle={{ backgroundColor: '#f1f5f9', borderColor: '#1e40af' }}
                       >
                         <YStack
                           width={40}
@@ -495,7 +494,7 @@ export default function NovaSolicitacaoScreen() {
                         </YStack>
                         <Feather name="chevron-right" size={16} color="#94a3b8" />
                       </XStack>
-                    </Pressable>
+                    </TouchableOpacity>
                   </React.Fragment>
                 ))}
               </YStack>
@@ -551,7 +550,7 @@ export default function NovaSolicitacaoScreen() {
             <YStack gap="$3">
               {setores.map((setor, index) => (
                 <React.Fragment key={setor.id_setor}>
-                  <Pressable
+                  <TouchableOpacity activeOpacity={0.7}
                     onPress={() => handleSelectSetor(setor)}
                     accessibilityRole="button"
                     accessibilityLabel={`Selecionar setor ${setor.nome}`}
@@ -565,7 +564,6 @@ export default function NovaSolicitacaoScreen() {
                       alignItems="center"
                       gap="$3"
                       elevation={1}
-                      pressStyle={{ backgroundColor: '#f1f5f9', borderColor: '#1e40af' }}
                     >
                       <YStack
                         width={44}
@@ -593,7 +591,7 @@ export default function NovaSolicitacaoScreen() {
                         <Feather name="chevron-right" size={16} color="#94a3b8" />
                       </XStack>
                     </XStack>
-                  </Pressable>
+                  </TouchableOpacity>
                 </React.Fragment>
               ))}
             </YStack>

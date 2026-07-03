@@ -40,11 +40,11 @@ This plan implements role-specific functionality for admin and técnico users in
     - **Property 9: per_page clamped to maximum 50** — verify clampPerPage returns min(value, 50)
     - **Validates: Requirements 8.2**
 
-- [-] 2. Checkpoint - Ensure utility module tests pass
+- [x] 2. Checkpoint - Ensure utility module tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 3. Refactor StatusControls component
-  - [-] 3.1 Create `src/components/StatusControls.tsx` using React Native primitives
+- [x] 3. Refactor StatusControls component
+  - [x] 3.1 Create `src/components/StatusControls.tsx` using React Native primitives
     - Refactor existing TecnicoControls logic into StatusControls
     - Use View, Text, StyleSheet, TouchableOpacity, TextInput — NO Tamagui components
     - Accept props: `idSolicitacao`, `currentStatus`, `onStatusChanged`, `showLocationButton`
@@ -59,7 +59,7 @@ This plan implements role-specific functionality for admin and técnico users in
     - Use ActivityIndicator instead of Tamagui Spinner
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-  - [~] 3.2 Update `src/components/index.ts` to export StatusControls
+  - [x] 3.2 Update `src/components/index.ts` to export StatusControls
     - Add StatusControls export
     - Keep existing TecnicoControls export for backward compatibility during transition
     - _Requirements: 7.4_
@@ -73,8 +73,8 @@ This plan implements role-specific functionality for admin and técnico users in
     - Test uses TouchableOpacity (not Tamagui pressable)
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-- [ ] 4. Create Admin Dashboard screen
-  - [-] 4.1 Create `app/(tabs)/painel/index.tsx` with Admin Dashboard
+- [x] 4. Create Admin Dashboard screen
+  - [x] 4.1 Create `app/(tabs)/painel/index.tsx` with Admin Dashboard
     - Use SafeAreaView, View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator
     - Display 6 status count cards using computeStatusCounts from roles utility
     - Make status cards tappable to filter the list below (using filterByStatus or applyFilter on store)
@@ -85,12 +85,12 @@ This plan implements role-specific functionality for admin and técnico users in
     - Display ErrorMessage component with retry button on API failure
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6_
 
-  - [-] 4.2 Create `app/(tabs)/painel/_layout.tsx` for nested routing
+  - [x] 4.2 Create `app/(tabs)/painel/_layout.tsx` for nested routing
     - Use Stack from expo-router with headerShown: false
     - _Requirements: 3.5_
 
-- [ ] 5. Create Técnico Work View screen
-  - [-] 5.1 Create `app/(tabs)/trabalho/index.tsx` with Técnico Work View
+- [x] 5. Create Técnico Work View screen
+  - [x] 5.1 Create `app/(tabs)/trabalho/index.tsx` with Técnico Work View
     - Use SafeAreaView, View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator
     - Display filter bar with status chips (TouchableOpacity elements for each StatusSolicitacao)
     - Render FlatList with SolicitacaoCard items, descriptions truncated to 80 chars
@@ -101,15 +101,15 @@ This plan implements role-specific functionality for admin and técnico users in
     - Display ErrorMessage component with retry button on API failure
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6_
 
-  - [~] 5.2 Create `app/(tabs)/trabalho/_layout.tsx` for nested routing
+  - [x] 5.2 Create `app/(tabs)/trabalho/_layout.tsx` for nested routing
     - Use Stack from expo-router with headerShown: false
     - _Requirements: 4.4_
 
-- [~] 6. Checkpoint - Ensure new screens render without errors
+- [x] 6. Checkpoint - Ensure new screens render without errors
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Wire role-based tab navigation and home screen
-  - [~] 7.1 Modify `app/(tabs)/_layout.tsx` to support role-based tabs
+  - [-] 7.1 Modify `app/(tabs)/_layout.tsx` to support role-based tabs
     - Import useAuthStore to read user.tipo
     - Import getTabsForRole from @/utils/roles
     - Conditionally render "Painel" tab (bar-chart-2 icon) visible only for admin
@@ -119,7 +119,7 @@ This plan implements role-specific functionality for admin and técnico users in
     - Keep Início and Perfil tabs visible for all roles
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-  - [~] 7.2 Modify `app/(tabs)/index.tsx` to show role-based quick actions
+  - [-] 7.2 Modify `app/(tabs)/index.tsx` to show role-based quick actions
     - Import useAuthStore to read user.tipo
     - Import getHomeQuickActions from @/utils/roles
     - Replace hardcoded quick action cards with dynamic cards from getHomeQuickActions
@@ -129,7 +129,7 @@ This plan implements role-specific functionality for admin and técnico users in
     - Keep existing "Como funciona" section for cidadão only
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
-  - [~] 7.3 Modify `app/(tabs)/minhas-solicitacoes/[id].tsx` to use StatusControls
+  - [-] 7.3 Modify `app/(tabs)/minhas-solicitacoes/[id].tsx` to use StatusControls
     - Replace TecnicoControls import with StatusControls import
     - Use shouldShowStatusControls(user?.tipo) to conditionally render
     - Pass showLocationButton={shouldShowLocationButton(user?.tipo)} prop

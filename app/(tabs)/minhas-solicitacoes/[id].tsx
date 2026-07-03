@@ -13,9 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 
-import { StatusBadge, MapPreview, ErrorMessage, TecnicoControls } from '@/components';
+import { StatusBadge, MapPreview, ErrorMessage, StatusControls } from '@/components';
 import { detalhar } from '@/services/solicitacoes';
 import { useAuthStore } from '@/stores/authStore';
+import { shouldShowStatusControls, shouldShowLocationButton } from '@/utils/roles';
 import { AppError } from '@/utils/errors';
 import type { SolicitacaoDetalhe, Foto } from '@/types';
 
@@ -390,13 +391,14 @@ export default function DetalhesSolicitacaoScreen() {
           </View>
         ) : null}
 
-        {/* Técnico controls */}
-        {user?.tipo === 'tecnico' ? (
+        {/* Status controls (admin e tecnico) */}
+        {user && shouldShowStatusControls(user.tipo) ? (
           <View style={styles.card}>
-            <TecnicoControls
+            <StatusControls
               idSolicitacao={solicitacao.id_solicitacao}
               currentStatus={status}
               onStatusChanged={handleStatusChanged}
+              showLocationButton={shouldShowLocationButton(user.tipo)}
             />
           </View>
         ) : null}

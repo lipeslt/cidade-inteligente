@@ -1,11 +1,12 @@
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuthStore } from '@/stores/authStore';
+
 /**
- * Custom tab bar icon for the center "+" button.
- * Renders a raised circular blue button that floats above the tab bar.
+ * Ícone customizado para o botão central "+" elevado na tab bar.
  */
 function CenterTabIcon({ focused }: { focused: boolean }) {
   return (
@@ -18,16 +19,22 @@ function CenterTabIcon({ focused }: { focused: boolean }) {
 }
 
 /**
- * Tab layout with 3 tabs:
- * - Início (left) with home icon
- * - Nova Solicitação (center) with raised "+" button
- * - Perfil (right) with user icon
+ * Layout de tabs com navegação baseada no role do usuário:
  *
- * The "minhas-solicitacoes" route is accessed from within
- * the Início tab (not shown as a separate tab).
+ * - admin: Início, Painel, Perfil (sem center button)
+ * - tecnico: Início, Nova Solicitação (center "+"), Trabalho, Perfil
+ * - cidadao: Início, Nova Solicitação (center "+"), Perfil
+ *
+ * Todas as rotas são declaradas como Tabs.Screen; as que não se aplicam
+ * ao role ficam ocultas via href: null.
  */
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const user = useAuthStore((state) => state.user);
+  const role = user?.tipo ?? 'cidadao';
+
+  const isAdmin = role === 'admin';
+  const isTecnico = role === 'tecnico';
 
   return (
     <Tabs
@@ -55,32 +62,72 @@ export default function TabLayout() {
         },
       }}
     >
+      {/* Início — visível para todos */}
       <Tabs.Screen
         name="index"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Feather name="home" size={22} color={color} />
           ),
         }}
       />
+
+      {/* Nova Solicitação — center button para cidadao e tecnico, oculto para admin */}
       <Tabs.Screen
         name="nova-solicitacao"
         options={{
           title: 'Nova Solicitação',
-          tabBarIcon: ({ focused }) => <CenterTabIcon focused={focused} />,
+          ...(isAdmin
+            ? { href: null }
+            : {
+                tabBarIcon: ({ focused }) => <CenterTabIcon focused={focused} />,
+              }),
         }}
       />
+
+      {/* Painel — visível apenas para admin */}
+      <Tabs.Screen
+        name="painel"
+        options={{
+          title: 'Painel',
+          ...(isAdmin
+            ? {
+                tabBarIcon: ({ color }) => (
+                  <Feather name="bar-chart-2" size={22} color={color} />
+                ),
+              }
+            : { href: null }),
+        }}
+      />
+
+      {/* Trabalho — visível apenas para tecnico */}
+      <Tabs.Screen
+        name="trabalho"
+        options={{
+          title: 'Trabalho',
+          ...(isTecnico
+            ? {
+                tabBarIcon: ({ color }) => (
+                  <Feather name="tool" size={22} color={color} />
+                ),
+              }
+            : { href: null }),
+        }}
+      />
+
+      {/* Perfil — visível para todos */}
       <Tabs.Screen
         name="perfil"
         options={{
           title: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Feather name="user" size={22} color={color} />
           ),
         }}
       />
-      {/* Hidden from tab bar — accessed via navigation */}
+
+      {/* Minhas Solicitações — oculto da tab bar, acessado via navegação */}
       <Tabs.Screen
         name="minhas-solicitacoes"
         options={{

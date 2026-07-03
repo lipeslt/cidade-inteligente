@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, Input, TextArea, Button, ScrollView, Spinner } from 'tamagui';
+
 import * as ImagePicker from 'expo-image-picker';
 import { Feather } from '@expo/vector-icons';
 
@@ -15,6 +16,55 @@ import { formatCoordinateCitizen } from '@/utils/formatters';
 import type { Setor, Servico, Prioridade, ImageFile, CriarSolicitacaoRequest } from '@/types';
 
 type Step = 'setores' | 'servicos' | 'formulario';
+
+// ─── Icon helpers ────────────────────────────────────────────────────────────
+
+interface IconStyle {
+  name: string;
+  bg: string;
+  color: string;
+}
+
+/** Mapeia nome do serviço para ícone Feather + cores personalizadas */
+function getServiceIcon(name: string): IconStyle {
+  const lower = name.toLowerCase();
+  if (lower.includes('lixo') || lower.includes('coleta')) return { name: 'trash-2', bg: '#dcfce7', color: '#166534' };
+  if (lower.includes('iluminação') || lower.includes('iluminacao') || lower.includes('luz')) return { name: 'zap', bg: '#fef9c3', color: '#854d0e' };
+  if (lower.includes('buraco') || lower.includes('via') || lower.includes('asfalto')) return { name: 'alert-triangle', bg: '#fee2e2', color: '#991b1b' };
+  if (lower.includes('poda') || lower.includes('árvore') || lower.includes('arvore')) return { name: 'scissors', bg: '#d1fae5', color: '#065f46' };
+  if (lower.includes('cão') || lower.includes('cao') || lower.includes('gato') || lower.includes('animal')) return { name: 'heart', bg: '#fce7f3', color: '#9d174d' };
+  if (lower.includes('transporte') || lower.includes('trânsito') || lower.includes('transito')) return { name: 'truck', bg: '#e0e7ff', color: '#3730a3' };
+  if (lower.includes('obra')) return { name: 'hard-hat', bg: '#ffedd5', color: '#9a3412' };
+  if (lower.includes('saúde') || lower.includes('saude')) return { name: 'activity', bg: '#fce4ec', color: '#b71c1c' };
+  if (lower.includes('governo')) return { name: 'briefcase', bg: '#e8eaf6', color: '#283593' };
+  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'leaf', bg: '#e8f5e9', color: '#2e7d32' };
+  if (lower.includes('segurança') || lower.includes('seguranca')) return { name: 'shield', bg: '#e3f2fd', color: '#1565c0' };
+  if (lower.includes('infraestrutura')) return { name: 'settings', bg: '#f3e5f5', color: '#6a1b9a' };
+  if (lower.includes('agricultura')) return { name: 'sun', bg: '#fff8e1', color: '#f57f17' };
+  if (lower.includes('água') || lower.includes('agua') || lower.includes('esgoto')) return { name: 'droplet', bg: '#e0f7fa', color: '#00695c' };
+  if (lower.includes('educação') || lower.includes('educacao') || lower.includes('escola')) return { name: 'book-open', bg: '#ede7f6', color: '#4527a0' };
+  return { name: 'tool', bg: '#f1f5f9', color: '#475569' };
+}
+
+/** Mapeia nome do setor para ícone Feather + cores personalizadas */
+function getSetorIcon(name: string): IconStyle {
+  const lower = name.toLowerCase();
+  if (lower.includes('infraestrutura')) return { name: 'settings', bg: '#f3e5f5', color: '#6a1b9a' };
+  if (lower.includes('saúde') || lower.includes('saude')) return { name: 'activity', bg: '#fce4ec', color: '#b71c1c' };
+  if (lower.includes('educação') || lower.includes('educacao')) return { name: 'book-open', bg: '#ede7f6', color: '#4527a0' };
+  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'leaf', bg: '#e8f5e9', color: '#2e7d32' };
+  if (lower.includes('segurança') || lower.includes('seguranca')) return { name: 'shield', bg: '#e3f2fd', color: '#1565c0' };
+  if (lower.includes('transporte') || lower.includes('trânsito') || lower.includes('transito')) return { name: 'truck', bg: '#e0e7ff', color: '#3730a3' };
+  if (lower.includes('agricultura')) return { name: 'sun', bg: '#fff8e1', color: '#f57f17' };
+  if (lower.includes('obra')) return { name: 'hard-hat', bg: '#ffedd5', color: '#9a3412' };
+  if (lower.includes('governo') || lower.includes('administra')) return { name: 'briefcase', bg: '#e8eaf6', color: '#283593' };
+  if (lower.includes('social') || lower.includes('assistência') || lower.includes('assistencia')) return { name: 'users', bg: '#fce7f3', color: '#9d174d' };
+  if (lower.includes('cultura') || lower.includes('esporte') || lower.includes('lazer')) return { name: 'music', bg: '#fff3e0', color: '#e65100' };
+  if (lower.includes('água') || lower.includes('agua') || lower.includes('saneamento')) return { name: 'droplet', bg: '#e0f7fa', color: '#00695c' };
+  if (lower.includes('limpeza') || lower.includes('lixo') || lower.includes('coleta')) return { name: 'trash-2', bg: '#dcfce7', color: '#166534' };
+  if (lower.includes('iluminação') || lower.includes('iluminacao') || lower.includes('energia')) return { name: 'zap', bg: '#fef9c3', color: '#854d0e' };
+  return { name: 'briefcase', bg: '#dbeafe', color: '#1e40af' };
+}
 
 /**
  * Tela Nova Solicitação — fluxo multi-step (state machine).
@@ -223,17 +273,19 @@ export default function NovaSolicitacaoScreen() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
         {isSubmitting && <LoadingOverlay />}
-        <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-          <YStack flex={1} padding="$4" gap="$4">
+        <ScrollView f={1} showsVerticalScrollIndicator={false}>
+          <YStack f={1} p="$4" gap="$4">
             {/* Back button */}
-            <TouchableOpacity activeOpacity={0.7}
+            <TouchableOpacity
               onPress={() => {
                 setSelectedServico(null);
                 setStep('servicos');
               }}
               accessibilityLabel="Voltar para serviços"
+              accessibilityRole="button"
+              activeOpacity={0.7}
             >
-              <XStack alignItems="center" gap="$2">
+              <XStack ai="center" gap="$2">
                 <Feather name="arrow-left" size={20} color="#1e293b" />
                 <Text fontSize="$3" color="#1e293b" fontWeight="500">Voltar</Text>
               </XStack>
@@ -242,16 +294,16 @@ export default function NovaSolicitacaoScreen() {
             {/* Service display (read-only) */}
             {selectedServico && (
               <YStack
-                backgroundColor="$blue2"
-                borderRadius="$3"
-                padding="$3"
-                borderWidth={1}
+                bg="$blue2"
+                br="$3"
+                p="$3"
+                bw={1}
                 borderColor="$blue6"
               >
                 <Text fontSize="$2" color="$blue9" fontWeight="500">
                   Serviço selecionado
                 </Text>
-                <Text fontSize="$4" fontWeight="600" color="$blue11" marginTop="$1">
+                <Text fontSize="$4" fontWeight="600" color="$blue11" mt="$1">
                   {selectedServico.nome}
                 </Text>
               </YStack>
@@ -267,11 +319,11 @@ export default function NovaSolicitacaoScreen() {
                 value={descricao}
                 onChangeText={setDescricao}
                 numberOfLines={4}
-                minHeight={100}
-                borderWidth={1}
+                minh={100}
+                bw={1}
                 borderColor="$gray6"
-                borderRadius="$3"
-                padding="$3"
+                br="$3"
+                p="$3"
                 fontSize="$3"
                 accessibilityLabel="Descrição do problema"
               />
@@ -286,32 +338,32 @@ export default function NovaSolicitacaoScreen() {
                 placeholder="Rua / Avenida"
                 value={endereco}
                 onChangeText={setEndereco}
-                borderWidth={1}
+                bw={1}
                 borderColor="$gray6"
-                borderRadius="$3"
+                br="$3"
                 fontSize="$3"
                 accessibilityLabel="Endereço"
               />
               <XStack gap="$2">
                 <Input
-                  flex={2}
+                  f={2}
                   placeholder="Bairro"
                   value={bairro}
                   onChangeText={setBairro}
-                  borderWidth={1}
+                  bw={1}
                   borderColor="$gray6"
-                  borderRadius="$3"
+                  br="$3"
                   fontSize="$3"
                   accessibilityLabel="Bairro"
                 />
                 <Input
-                  flex={1}
+                  f={1}
                   placeholder="Nº"
                   value={numero}
                   onChangeText={setNumero}
-                  borderWidth={1}
+                  bw={1}
                   borderColor="$gray6"
-                  borderRadius="$3"
+                  br="$3"
                   fontSize="$3"
                   keyboardType="numeric"
                   accessibilityLabel="Número"
@@ -342,11 +394,11 @@ export default function NovaSolicitacaoScreen() {
               )}
               {latitude === null && longitude === null && !gpsMessage && (
                 <YStack
-                  height={40}
-                  justifyContent="center"
-                  alignItems="center"
+                  h={40}
+                  jc="center"
+                  ai="center"
                 >
-                  <XStack gap="$2" alignItems="center">
+                  <XStack gap="$2" ai="center">
                     <Spinner size="small" color="$blue10" />
                     <Text fontSize="$2" color="$gray9">
                       Obtendo localização...
@@ -379,17 +431,17 @@ export default function NovaSolicitacaoScreen() {
             {/* Submit button */}
             <Button
               size="$5"
-              backgroundColor="#1e40af"
+              bg="#1e40af"
               color="#ffffff"
               fontWeight="700"
-              borderRadius="$4"
+              br="$4"
               onPress={handleSubmit}
               disabled={isSubmitting}
-              pressStyle={{ backgroundColor: '#1d4ed8', scale: 0.98 }}
-              disabledStyle={{ opacity: 0.6 }}
+              pressStyle={{ bg: '#1d4ed8', scale: 0.98 }}
+              disabledStyle={{ o: 0.6 }}
               accessibilityLabel="Enviar solicitação"
-              marginTop="$2"
-              marginBottom="$4"
+              mt="$2"
+              mb="$4"
             >
               {isSubmitting ? 'Enviando...' : 'Enviar Solicitação'}
             </Button>
@@ -403,22 +455,27 @@ export default function NovaSolicitacaoScreen() {
   if (step === 'servicos') {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
-        <YStack flex={1} padding="$4" gap="$4">
+        <YStack f={1} p="$4" gap="$4">
           {/* Header com botão voltar */}
-          <XStack alignItems="center" gap="$3">
-            <TouchableOpacity activeOpacity={0.7} onPress={handleBackToSetores} accessibilityLabel="Voltar para setores">
+          <XStack ai="center" gap="$3">
+            <TouchableOpacity
+              onPress={handleBackToSetores}
+              accessibilityLabel="Voltar para setores"
+              accessibilityRole="button"
+              activeOpacity={0.7}
+            >
               <YStack
-                width={40}
-                height={40}
-                borderRadius={20}
-                backgroundColor="#f1f5f9"
-                alignItems="center"
-                justifyContent="center"
+                w={40}
+                h={40}
+                br={20}
+                bg="#f1f5f9"
+                ai="center"
+                jc="center"
               >
                 <Feather name="arrow-left" size={20} color="#1e293b" />
               </YStack>
             </TouchableOpacity>
-            <YStack flex={1}>
+            <YStack f={1}>
               <Text fontSize={20} fontWeight="700" color="#1e293b" numberOfLines={1}>
                 {selectedSetor?.nome ?? 'Serviços'}
               </Text>
@@ -430,9 +487,9 @@ export default function NovaSolicitacaoScreen() {
 
           {/* Loading */}
           {isLoading && (
-            <YStack flex={1} justifyContent="center" alignItems="center">
+            <YStack f={1} jc="center" ai="center">
               <Spinner size="large" color="#1e40af" />
-              <Text marginTop="$3" color="#64748b">
+              <Text mt="$3" color="#64748b">
                 Carregando serviços...
               </Text>
             </YStack>
@@ -445,9 +502,9 @@ export default function NovaSolicitacaoScreen() {
 
           {/* Empty state */}
           {!isLoading && !error && servicos.length === 0 && (
-            <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
+            <YStack f={1} jc="center" ai="center" p="$4">
               <Feather name="inbox" size={48} color="#94a3b8" />
-              <Text fontSize="$4" color="#64748b" textAlign="center" marginTop="$3">
+              <Text fontSize="$4" color="#64748b" ta="center" mt="$3">
                 Nenhum serviço disponível neste setor
               </Text>
             </YStack>
@@ -455,48 +512,51 @@ export default function NovaSolicitacaoScreen() {
 
           {/* Lista de serviços */}
           {!isLoading && !error && servicos.length > 0 && (
-            <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+            <ScrollView f={1} showsVerticalScrollIndicator={false}>
               <YStack gap="$3">
-                {servicos.map((servico, index) => (
-                  <React.Fragment key={servico.id_servico}>
-                    <TouchableOpacity activeOpacity={0.7}
+                {servicos.map((servico) => {
+                  const icon = getServiceIcon(servico.nome);
+                  return (
+                    <TouchableOpacity
+                      key={servico.id_servico}
                       onPress={() => handleSelectServico(servico)}
+                      activeOpacity={0.7}
                       accessibilityRole="button"
                       accessibilityLabel={`Selecionar serviço ${servico.nome}`}
                     >
                       <XStack
-                        backgroundColor="#ffffff"
-                        borderWidth={1}
+                        bg="#ffffff"
+                        bw={1}
                         borderColor="#e2e8f0"
-                        borderRadius="$4"
-                        padding="$4"
-                        alignItems="center"
+                        br="$4"
+                        p="$4"
+                        ai="center"
                         gap="$3"
                         elevation={1}
                       >
                         <YStack
-                          width={40}
-                          height={40}
-                          borderRadius={20}
-                          backgroundColor="#dcfce7"
-                          alignItems="center"
-                          justifyContent="center"
+                          w={40}
+                          h={40}
+                          br={20}
+                          bg={icon.bg as any}
+                          ai="center"
+                          jc="center"
                         >
-                          <Feather name="tool" size={18} color="#166534" />
+                          <Feather name={icon.name as any} size={18} color={icon.color} />
                         </YStack>
-                        <YStack flex={1}>
+                        <YStack f={1}>
                           <Text fontSize="$4" fontWeight="600" color="#1e293b">
                             {servico.nome}
                           </Text>
-                          <Text fontSize="$2" color="#94a3b8" marginTop={2}>
+                          <Text fontSize="$2" color="#94a3b8" mt={2}>
                             {servico.nome_setor}
                           </Text>
                         </YStack>
                         <Feather name="chevron-right" size={16} color="#94a3b8" />
                       </XStack>
                     </TouchableOpacity>
-                  </React.Fragment>
-                ))}
+                  );
+                })}
               </YStack>
             </ScrollView>
           )}
@@ -508,9 +568,9 @@ export default function NovaSolicitacaoScreen() {
   // ─── Step: Setores (default) ───────────────────────────────────────────────
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
-      <YStack flex={1} padding="$4" gap="$4">
+      <YStack f={1} p="$4" gap="$4">
         {/* Header */}
-        <YStack gap="$1" paddingTop="$2">
+        <YStack gap="$1" pt="$2">
           <Text fontSize={24} fontWeight="800" color="#1e293b">
             Nova Solicitação
           </Text>
@@ -521,9 +581,9 @@ export default function NovaSolicitacaoScreen() {
 
         {/* Loading */}
         {isLoading && (
-          <YStack flex={1} justifyContent="center" alignItems="center">
+          <YStack f={1} jc="center" ai="center">
             <Spinner size="large" color="#1e40af" />
-            <Text marginTop="$3" color="#64748b">
+            <Text mt="$3" color="#64748b">
               Carregando setores...
             </Text>
           </YStack>
@@ -536,9 +596,9 @@ export default function NovaSolicitacaoScreen() {
 
         {/* Empty state */}
         {!isLoading && !error && setores.length === 0 && (
-          <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
+          <YStack f={1} jc="center" ai="center" p="$4">
             <Feather name="inbox" size={48} color="#94a3b8" />
-            <Text fontSize="$4" color="#64748b" textAlign="center" marginTop="$3">
+            <Text fontSize="$4" color="#64748b" ta="center" mt="$3">
               Nenhum setor disponível no momento
             </Text>
           </YStack>
@@ -546,44 +606,47 @@ export default function NovaSolicitacaoScreen() {
 
         {/* Lista de setores */}
         {!isLoading && !error && setores.length > 0 && (
-          <ScrollView flex={1} showsVerticalScrollIndicator={false}>
+          <ScrollView f={1} showsVerticalScrollIndicator={false}>
             <YStack gap="$3">
-              {setores.map((setor, index) => (
-                <React.Fragment key={setor.id_setor}>
-                  <TouchableOpacity activeOpacity={0.7}
+              {setores.map((setor) => {
+                const icon = getSetorIcon(setor.nome);
+                return (
+                  <TouchableOpacity
+                    key={setor.id_setor}
                     onPress={() => handleSelectSetor(setor)}
+                    activeOpacity={0.7}
                     accessibilityRole="button"
                     accessibilityLabel={`Selecionar setor ${setor.nome}`}
                   >
                     <XStack
-                      backgroundColor="#ffffff"
-                      borderWidth={1}
+                      bg="#ffffff"
+                      bw={1}
                       borderColor="#e2e8f0"
-                      borderRadius="$4"
-                      padding="$4"
-                      alignItems="center"
+                      br="$4"
+                      p="$4"
+                      ai="center"
                       gap="$3"
                       elevation={1}
                     >
                       <YStack
-                        width={44}
-                        height={44}
-                        borderRadius={22}
-                        backgroundColor="#dbeafe"
-                        alignItems="center"
-                        justifyContent="center"
+                        w={44}
+                        h={44}
+                        br={22}
+                        bg={icon.bg as any}
+                        ai="center"
+                        jc="center"
                       >
-                        <Feather name="briefcase" size={20} color="#1e40af" />
+                        <Feather name={icon.name as any} size={20} color={icon.color} />
                       </YStack>
-                      <YStack flex={1}>
+                      <YStack f={1}>
                         <Text fontSize="$4" fontWeight="600" color="#1e293b">
                           {setor.nome}
                         </Text>
-                        <Text fontSize="$2" color="#94a3b8" marginTop={2}>
+                        <Text fontSize="$2" color="#94a3b8" mt={2}>
                           {setor.sigla}
                         </Text>
                       </YStack>
-                      <XStack alignItems="center" gap="$1">
+                      <XStack ai="center" gap="$1">
                         <Text fontSize="$2" color="#1e40af" fontWeight="500">
                           {setor.total_servicos}{' '}
                           {setor.total_servicos === 1 ? 'serviço' : 'serviços'}
@@ -592,8 +655,8 @@ export default function NovaSolicitacaoScreen() {
                       </XStack>
                     </XStack>
                   </TouchableOpacity>
-                </React.Fragment>
-              ))}
+                );
+              })}
             </YStack>
           </ScrollView>
         )}

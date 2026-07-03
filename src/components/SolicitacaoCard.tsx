@@ -36,9 +36,6 @@ export function SolicitacaoCard({ solicitacao, onPress }: SolicitacaoCardProps) 
       accessibilityLabel={`Solicitação ${solicitacao.nome_servico}, status ${statusConfig.label}`}
       style={styles.container}
     >
-      {/* Barra lateral colorida */}
-      <View style={[styles.leftBar, { backgroundColor: statusConfig.bar }]} />
-
       {/* Conteúdo */}
       <YStack f={1} p="$3" gap="$2">
         <XStack jc="space-between" ai="flex-start">
@@ -82,11 +79,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-  },
-  leftBar: {
-    width: 4,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
   },
   badge: {
     flexDirection: 'row',

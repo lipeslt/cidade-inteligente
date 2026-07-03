@@ -189,12 +189,7 @@ export default function MinhasSolicitacoesScreen() {
   if (isInitialLoad && isLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
-        <YStack f={1} jc="center" ai="center" bg="#f8fafc">
-          <Spinner size="large" color="#1e40af" />
-          <Text mt="$3" color="#64748b" fontSize="$4">
-            Carregando solicitações...
-          </Text>
-        </YStack>
+        <PageLoading message="Carregando solicitações..." />
       </SafeAreaView>
     );
   }

@@ -34,10 +34,10 @@ function getServiceIcon(name: string): IconStyle {
   if (lower.includes('poda') || lower.includes('árvore') || lower.includes('arvore')) return { name: 'scissors', bg: '#d1fae5', color: '#065f46' };
   if (lower.includes('cão') || lower.includes('cao') || lower.includes('gato') || lower.includes('animal')) return { name: 'heart', bg: '#fce7f3', color: '#9d174d' };
   if (lower.includes('transporte') || lower.includes('trânsito') || lower.includes('transito')) return { name: 'truck', bg: '#e0e7ff', color: '#3730a3' };
-  if (lower.includes('obra')) return { name: 'hard-hat', bg: '#ffedd5', color: '#9a3412' };
+  if (lower.includes('obra')) return { name: 'hammer', bg: '#ffedd5', color: '#9a3412' };
   if (lower.includes('saúde') || lower.includes('saude')) return { name: 'activity', bg: '#fce4ec', color: '#b71c1c' };
   if (lower.includes('governo')) return { name: 'briefcase', bg: '#e8eaf6', color: '#283593' };
-  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'leaf', bg: '#e8f5e9', color: '#2e7d32' };
+  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'wind', bg: '#e8f5e9', color: '#2e7d32' };
   if (lower.includes('segurança') || lower.includes('seguranca')) return { name: 'shield', bg: '#e3f2fd', color: '#1565c0' };
   if (lower.includes('infraestrutura')) return { name: 'settings', bg: '#f3e5f5', color: '#6a1b9a' };
   if (lower.includes('agricultura')) return { name: 'sun', bg: '#fff8e1', color: '#f57f17' };
@@ -52,11 +52,11 @@ function getSetorIcon(name: string): IconStyle {
   if (lower.includes('infraestrutura')) return { name: 'settings', bg: '#f3e5f5', color: '#6a1b9a' };
   if (lower.includes('saúde') || lower.includes('saude')) return { name: 'activity', bg: '#fce4ec', color: '#b71c1c' };
   if (lower.includes('educação') || lower.includes('educacao')) return { name: 'book-open', bg: '#ede7f6', color: '#4527a0' };
-  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'leaf', bg: '#e8f5e9', color: '#2e7d32' };
+  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'wind', bg: '#e8f5e9', color: '#2e7d32' };
   if (lower.includes('segurança') || lower.includes('seguranca')) return { name: 'shield', bg: '#e3f2fd', color: '#1565c0' };
   if (lower.includes('transporte') || lower.includes('trânsito') || lower.includes('transito')) return { name: 'truck', bg: '#e0e7ff', color: '#3730a3' };
   if (lower.includes('agricultura')) return { name: 'sun', bg: '#fff8e1', color: '#f57f17' };
-  if (lower.includes('obra')) return { name: 'hard-hat', bg: '#ffedd5', color: '#9a3412' };
+  if (lower.includes('obra')) return { name: 'hammer', bg: '#ffedd5', color: '#9a3412' };
   if (lower.includes('governo') || lower.includes('administra')) return { name: 'briefcase', bg: '#e8eaf6', color: '#283593' };
   if (lower.includes('social') || lower.includes('assistência') || lower.includes('assistencia')) return { name: 'users', bg: '#fce7f3', color: '#9d174d' };
   if (lower.includes('cultura') || lower.includes('esporte') || lower.includes('lazer')) return { name: 'music', bg: '#fff3e0', color: '#e65100' };
@@ -487,9 +487,11 @@ export default function NovaSolicitacaoScreen() {
 
           {/* Loading */}
           {isLoading && (
-            <YStack f={1} jc="center" ai="center">
-              <Spinner size="large" color="#1e40af" />
-              <Text mt="$3" color="#64748b">
+            <YStack f={1} jc="center" ai="center" gap="$4">
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center' }}>
+                <Spinner size="large" color="#1e40af" />
+              </View>
+              <Text color="#64748b" fontSize="$4" fontWeight="500">
                 Carregando serviços...
               </Text>
             </YStack>
@@ -574,9 +576,11 @@ export default function NovaSolicitacaoScreen() {
 
         {/* Loading */}
         {isLoading && (
-          <YStack f={1} jc="center" ai="center">
-            <Spinner size="large" color="#1e40af" />
-            <Text mt="$3" color="#64748b">
+          <YStack f={1} jc="center" ai="center" gap="$4">
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center' }}>
+              <Spinner size="large" color="#1e40af" />
+            </View>
+            <Text color="#64748b" fontSize="$4" fontWeight="500">
               Carregando setores...
             </Text>
           </YStack>
@@ -624,7 +628,7 @@ export default function NovaSolicitacaoScreen() {
                       <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: icon.bg, alignItems: 'center', justifyContent: 'center' }}>
                         <Feather name={icon.name as any} size={20} color={icon.color} />
                       </View>
-                      <YStack f={1}>
+                      <YStack f={1} flexShrink={1}>
                         <Text fontSize="$4" fontWeight="600" color="#1e293b" numberOfLines={2}>
                           {setor.nome}
                         </Text>
@@ -632,7 +636,7 @@ export default function NovaSolicitacaoScreen() {
                           {setor.sigla}
                         </Text>
                       </YStack>
-                      <XStack ai="center" gap="$1">
+                      <XStack ai="center" gap="$1" flexShrink={0}>
                         <Text fontSize="$2" color="#1e40af" fontWeight="500">
                           {setor.total_servicos}{' '}
                           {setor.total_servicos === 1 ? 'serviço' : 'serviços'}

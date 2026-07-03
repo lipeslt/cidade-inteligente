@@ -1,20 +1,27 @@
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 interface PageLoadingProps {
   message?: string;
+  icon?: keyof typeof Feather.glyphMap;
 }
 
 /**
  * Componente de carregamento de página — centralizado, limpo e profissional.
- * Exibe um spinner azul com mensagem opcional.
+ * Exibe um spinner dentro de um container circular com mensagem abaixo.
  */
-export function PageLoading({ message = 'Carregando...' }: PageLoadingProps) {
+export function PageLoading({ message = 'Carregando...', icon }: PageLoadingProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
+      <View style={styles.spinnerContainer}>
         <ActivityIndicator size="large" color="#1e40af" />
-        <Text style={styles.text}>{message}</Text>
       </View>
+      <Text style={styles.message}>{message}</Text>
+      {icon && (
+        <View style={styles.iconHint}>
+          <Feather name={icon} size={16} color="#94a3b8" />
+        </View>
+      )}
     </View>
   );
 }
@@ -25,17 +32,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f8fafc',
-  },
-  card: {
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: 16,
     padding: 32,
   },
-  text: {
-    fontSize: 15,
-    color: '#64748b',
+  spinnerContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#eff6ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#dbeafe',
+  },
+  message: {
+    fontSize: 16,
+    color: '#475569',
     fontWeight: '500',
     textAlign: 'center',
+    marginTop: 8,
+  },
+  iconHint: {
+    marginTop: 4,
   },
 });

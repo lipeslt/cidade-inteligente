@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  ScrollView,
 } from 'react-native';
 import { YStack, XStack, Text, Input, Button, Spinner } from 'tamagui';
 import { useRouter } from 'expo-router';
@@ -130,14 +131,14 @@ export default function LoginScreen() {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.appName}>Cidade Inteligente</Text>
         </Animated.View>
       </LinearGradient>
 
       {/* White card form */}
       <KeyboardAvoidingView
         style={styles.bottomSection}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
       >
         <Animated.View
           style={[
@@ -148,6 +149,11 @@ export default function LoginScreen() {
             },
           ]}
         >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
           {/* Greeting */}
           <Text style={styles.greeting}>Olá!</Text>
           <Text style={styles.greetingSub}>Faça login para continuar</Text>
@@ -260,6 +266,7 @@ export default function LoginScreen() {
           <Text style={styles.footer}>
             Prefeitura Municipal de Sorriso - MT
           </Text>
+          </ScrollView>
         </Animated.View>
       </KeyboardAvoidingView>
     </View>
@@ -311,15 +318,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 160,
-    height: 160,
-    marginBottom: 16,
-  },
-  appName: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#ffffff',
-    letterSpacing: -0.5,
+    width: 200,
+    height: 200,
   },
   bottomSection: {
     flex: 1,

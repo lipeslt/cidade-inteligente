@@ -77,12 +77,12 @@ export default function LoginScreen() {
         useNativeDriver: true,
       }),
       Animated.timing(logoMoveUp, {
-        toValue: -(height * 0.28),
+        toValue: -(height * 0.35),
         duration: 400,
         useNativeDriver: true,
       }),
       Animated.timing(logoScale, {
-        toValue: 0.55,
+        toValue: 0.65,
         duration: 400,
         useNativeDriver: true,
       }),
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   },
   startBtnContainer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 90,
     left: 0,
     right: 0,
     alignItems: 'center',
@@ -369,10 +369,10 @@ const styles = StyleSheet.create({
     elevation: 16,
   },
   handleBar: {
-    width: 40,
-    height: 4,
+    width: 56,
+    height: 5,
     backgroundColor: '#d1d5db',
-    borderRadius: 2,
+    borderRadius: 3,
     alignSelf: 'center',
     marginTop: 12,
     marginBottom: 8,

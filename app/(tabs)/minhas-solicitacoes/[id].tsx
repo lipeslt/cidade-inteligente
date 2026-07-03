@@ -20,10 +20,63 @@ import { AppError } from '@/utils/errors';
 import type { SolicitacaoDetalhe, Foto } from '@/types';
 
 /**
+ * Parseia a descrição em linhas estruturadas com ícone adequado.
+ */
+interface ParsedLine {
+  icon: React.ComponentProps<typeof Feather>['name'] | null;
+  label: string;
+  value: string;
+  isMain?: boolean;
+}
+
+function parseDescricao(descricao: string): ParsedLine[] {
+  const lines = descricao.split('\n').filter((l) => l.trim().length > 0);
+  const parsed: ParsedLine[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith('Usuário:') || trimmed.includes('Usuário:')) {
+      const value = trimmed.replace(/^.*Usuário:\s*/, '');
+      parsed.push({ icon: 'user', label: 'Usuário', value });
+    } else if (trimmed.startsWith('Localização:') || trimmed.includes('Localização:')) {
+      const value = trimmed.replace(/^.*Localização:\s*/, '');
+      parsed.push({ icon: 'map-pin', label: 'Localização', value });
+    } else if (trimmed.startsWith('Referência:') || trimmed.includes('Referência:')) {
+      const value = trimmed.replace(/^.*Referência:\s*/, '');
+      parsed.push({ icon: 'navigation', label: 'Referência', value });
+    } else if (trimmed.startsWith('Coordenadas:') || trimmed.includes('Coordenadas:')) {
+      const value = trimmed.replace(/^.*Coordenadas:\s*/, '');
+      parsed.push({ icon: 'crosshair', label: 'Coordenadas', value });
+    } else {
+      // First line or unrecognized → main description
+      parsed.push({ icon: null, label: '', value: trimmed, isMain: true });
+    }
+  }
+
+  return parsed;
+}
+
+/**
+ * Extrai coordenadas da descrição, se existirem.
+ */
+function extractCoordinates(descricao: string): { latitude: number; longitude: number } | null {
+  const match = descricao.match(/Coordenadas:\s*([-\d.]+),\s*([-\d.]+)/);
+  if (match) {
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[2]);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      return { latitude: lat, longitude: lng };
+    }
+  }
+  return null;
+}
+
+/**
  * Tela de detalhe de uma solicitação — layout card-based profissional.
  *
- * Exibe serviço, status, descrição, fotos e localização do técnico
- * em cards separados com visual consistente com nova-solicitacao.
+ * Exibe serviço, status, descrição parseada, fotos e localização
+ * em cards separados com visual consistente.
  */
 export default function DetalhesSolicitacaoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -142,7 +195,7 @@ export default function DetalhesSolicitacaoScreen() {
             style={styles.backButton}
             accessibilityLabel="Voltar"
           >
-            <Feather name="arrow-left" size={20} color="#1e293b" />
+            <Feather name="arrow-left" size={22} color="#1e293b" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Detalhes</Text>
           <View style={styles.headerSpacer} />
@@ -165,6 +218,10 @@ export default function DetalhesSolicitacaoScreen() {
     localizacao_tecnico !== null &&
     localizacao_tecnico.latitude !== '' &&
     localizacao_tecnico.longitude !== '';
+
+  // Parse description into structured lines
+  const parsedLines = descricao ? parseDescricao(descricao) : [];
+  const descCoords = descricao ? extractCoordinates(descricao) : null;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -202,7 +259,7 @@ export default function DetalhesSolicitacaoScreen() {
           accessibilityLabel="Voltar para lista de solicitações"
           accessibilityRole="button"
         >
-          <Feather name="arrow-left" size={20} color="#1e293b" />
+          <Feather name="arrow-left" size={22} color="#1e293b" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Detalhes</Text>
         <View style={styles.headerSpacer} />
@@ -216,7 +273,7 @@ export default function DetalhesSolicitacaoScreen() {
         {/* Serviço card */}
         {nome_servico ? (
           <View style={styles.card}>
-            <View style={styles.cardRow}>
+            <View style={styles.serviceRow}>
               <View style={styles.serviceIcon}>
                 <Feather name="tool" size={20} color="#1e40af" />
               </View>
@@ -238,14 +295,52 @@ export default function DetalhesSolicitacaoScreen() {
           </View>
         ) : null}
 
-        {/* Descrição card */}
-        {descricao ? (
+        {/* Informações parseadas da descrição */}
+        {parsedLines.length > 0 ? (
           <View style={styles.card}>
             <View style={styles.cardHeaderRow}>
               <Feather name="file-text" size={16} color="#64748b" />
-              <Text style={styles.cardLabel}>Descrição</Text>
+              <Text style={styles.cardLabel}>Informações</Text>
             </View>
-            <Text style={styles.descriptionText}>{descricao}</Text>
+
+            {parsedLines.map((line, index) => (
+              <View key={index}>
+                {index > 0 && <View style={styles.infoSeparator} />}
+                {line.isMain ? (
+                  <Text style={styles.mainDescription}>{line.value}</Text>
+                ) : (
+                  <View style={styles.infoRow}>
+                    <View style={styles.infoIconContainer}>
+                      <Feather
+                        name={line.icon as any}
+                        size={16}
+                        color="#1e40af"
+                      />
+                    </View>
+                    <View style={styles.infoContent}>
+                      <Text style={styles.infoLabel}>{line.label}</Text>
+                      <Text style={styles.infoValue}>{line.value}</Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {/* Mapa das coordenadas da descrição */}
+        {descCoords ? (
+          <View style={styles.card}>
+            <View style={styles.cardHeaderRow}>
+              <Feather name="map" size={16} color="#64748b" />
+              <Text style={styles.cardLabel}>Localização no Mapa</Text>
+            </View>
+            <View style={styles.mapContainer}>
+              <MapPreview
+                latitude={descCoords.latitude}
+                longitude={descCoords.longitude}
+              />
+            </View>
           </View>
         ) : null}
 
@@ -279,7 +374,7 @@ export default function DetalhesSolicitacaoScreen() {
           </View>
         ) : null}
 
-        {/* Location card */}
+        {/* Location card — localização do técnico */}
         {hasLocation ? (
           <View style={styles.card}>
             <View style={styles.cardHeaderRow}>
@@ -357,15 +452,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f8fafc',
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -399,23 +490,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 2,
   },
-  cardRow: {
+  serviceRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
-  },
-  cardLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#64748b',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   serviceIcon: {
     width: 44,
@@ -434,13 +512,67 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1e293b',
   },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  cardLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   statusContainer: {
     marginTop: 8,
   },
-  descriptionText: {
+  mainDescription: {
     fontSize: 15,
-    color: '#334155',
+    fontWeight: '600',
+    color: '#1e293b',
     lineHeight: 22,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  infoIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#dbeafe',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#1e293b',
+    lineHeight: 20,
+  },
+  infoSeparator: {
+    height: 1,
+    backgroundColor: '#f1f5f9',
+    marginVertical: 4,
+  },
+  mapContainer: {
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   photosRow: {
     gap: 10,
@@ -451,10 +583,6 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
     backgroundColor: '#e2e8f0',
-  },
-  mapContainer: {
-    borderRadius: 10,
-    overflow: 'hidden',
   },
   modalOverlay: {
     flex: 1,

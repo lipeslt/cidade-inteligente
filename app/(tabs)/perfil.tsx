@@ -1,6 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Image } from 'react-native';
-import { YStack, XStack, Text, Button, Spinner } from 'tamagui';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 
@@ -56,8 +62,6 @@ export default function PerfilScreen() {
       setProfile(data);
     } catch (error) {
       if (error instanceof AppError && error.type === 'auth') {
-        // token_invalido ou usuario_nao_encontrado → limpa sessão
-        // O root layout vai redirecionar para login automaticamente
         await clearSession();
         return;
       }
@@ -79,19 +83,16 @@ export default function PerfilScreen() {
   const handleLogout = useCallback(async () => {
     setIsLoggingOut(true);
     await logout();
-    // O root layout auth guard redireciona para /login automaticamente
   }, [logout]);
 
   // Estado de carregamento
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-        <YStack flex={1} justifyContent="center" alignItems="center" backgroundColor="$background">
-          <Spinner size="large" color="$blue10" />
-          <Text marginTop="$3" color="$gray10" fontSize="$4">
-            Carregando perfil...
-          </Text>
-        </YStack>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#1e40af" />
+          <Text style={styles.loadingText}>Carregando perfil...</Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -99,10 +100,10 @@ export default function PerfilScreen() {
   // Estado de erro
   if (errorMessage) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-        <YStack flex={1} justifyContent="center" backgroundColor="$background" padding="$4">
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centered}>
           <ErrorMessage message={errorMessage} onRetry={fetchProfile} />
-        </YStack>
+        </View>
       </SafeAreaView>
     );
   }
@@ -113,98 +114,216 @@ export default function PerfilScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <YStack flex={1} backgroundColor="$background" padding="$5" justifyContent="space-between">
-        {/* Conteúdo do perfil */}
-        <YStack alignItems="center" gap="$5" paddingTop="$6">
-          {/* Avatar */}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Header com avatar e nome */}
+        <View style={styles.headerSection}>
           {profile.imagem ? (
-            <YStack
-              width={100}
-              height={100}
-              borderRadius={50}
-              overflow="hidden"
-              backgroundColor="$gray4"
-            >
+            <View style={styles.avatarContainer}>
               <Image
                 source={{ uri: profile.imagem }}
-                style={{ width: 100, height: 100 }}
+                style={styles.avatarImage}
                 accessibilityLabel={`Foto de ${profile.nome}`}
               />
-            </YStack>
+            </View>
           ) : (
-            <YStack
-              width={100}
-              height={100}
-              borderRadius={50}
-              backgroundColor="$blue8"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text fontSize={36} fontWeight="700" color="white">
+            <View style={styles.avatarFallback}>
+              <Text style={styles.avatarInitials}>
                 {getInitials(profile.nome)}
               </Text>
-            </YStack>
+            </View>
           )}
+          <Text style={styles.profileName}>{profile.nome}</Text>
+        </View>
 
-          {/* Nome */}
-          <Text fontSize="$7" fontWeight="700" color="$gray12" textAlign="center">
-            {profile.nome}
-          </Text>
+        {/* Info section */}
+        <View style={styles.infoCard}>
+          {/* Email row */}
+          <View style={styles.infoRow}>
+            <View style={styles.infoIconContainer}>
+              <Feather name="mail" size={18} color="#1e40af" />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>E-mail</Text>
+              <Text style={styles.infoValue}>{profile.email}</Text>
+            </View>
+          </View>
 
-          {/* Informações */}
-          <YStack
-            width="100%"
-            gap="$4"
-            backgroundColor="$gray2"
-            borderRadius="$4"
-            padding="$4"
-          >
-            <XStack justifyContent="space-between" alignItems="center">
-              <Text fontSize="$4" color="$gray10" fontWeight="500">
-                E-mail
-              </Text>
-              <Text fontSize="$4" color="$gray12" flexShrink={1} textAlign="right">
-                {profile.email}
-              </Text>
-            </XStack>
+          {/* Separator */}
+          <View style={styles.separator} />
 
-            <XStack
-              borderTopWidth={1}
-              borderTopColor="$gray4"
-              paddingTop="$4"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Text fontSize="$4" color="$gray10" fontWeight="500">
-                Tipo
-              </Text>
-              <Text fontSize="$4" color="$gray12">
+          {/* Tipo row */}
+          <View style={styles.infoRow}>
+            <View style={styles.infoIconContainer}>
+              <Feather name="shield" size={18} color="#1e40af" />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Tipo de conta</Text>
+              <Text style={styles.infoValue}>
                 {TIPO_LABELS[profile.tipo] || profile.tipo}
               </Text>
-            </XStack>
-          </YStack>
-        </YStack>
+            </View>
+          </View>
+        </View>
+
+        {/* Spacer */}
+        <View style={styles.spacer} />
 
         {/* Botão de logout */}
-        <YStack paddingBottom="$4">
-          <Button
-            onPress={handleLogout}
-            disabled={isLoggingOut}
-            backgroundColor="#dc2626"
-            color="#ffffff"
-            fontWeight="700"
-            size="$5"
-            borderRadius="$4"
-            pressStyle={{ backgroundColor: '#b91c1c', scale: 0.98 }}
-            disabledStyle={{ opacity: 0.6 }}
-            accessibilityLabel="Sair da conta"
-            icon={isLoggingOut ? undefined : <Feather name="log-out" size={18} color="#ffffff" />}
-          >
-            {isLoggingOut ? <Spinner color="#ffffff" /> : 'Sair'}
-          </Button>
-        </YStack>
-      </YStack>
+        <TouchableOpacity
+          style={[styles.logoutButton, isLoggingOut && styles.logoutButtonDisabled]}
+          onPress={handleLogout}
+          disabled={isLoggingOut}
+          activeOpacity={0.8}
+          accessibilityLabel="Sair da conta"
+          accessibilityRole="button"
+        >
+          {isLoggingOut ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <>
+              <Feather name="log-out" size={18} color="#ffffff" />
+              <Text style={styles.logoutText}>Sair</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#64748b',
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 24,
+  },
+  headerSection: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'hidden',
+    backgroundColor: '#e2e8f0',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+  },
+  avatarFallback: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#1e40af',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+  },
+  avatarInitials: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  profileName: {
+    marginTop: 16,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1e293b',
+    textAlign: 'center',
+  },
+  infoCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  infoIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#dbeafe',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#1e293b',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e2e8f0',
+    marginHorizontal: 4,
+  },
+  spacer: {
+    flex: 1,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#dc2626',
+    borderRadius: 12,
+    paddingVertical: 16,
+    gap: 8,
+  },
+  logoutButtonDisabled: {
+    opacity: 0.6,
+  },
+  logoutText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+});

@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Dimensions,
+  Image,
 } from 'react-native';
 import { YStack, XStack, Text, Input, Button, Spinner } from 'tamagui';
 import { useRouter } from 'expo-router';
@@ -16,7 +17,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { validateLoginForm } from '@/utils/validation';
 import { AppError } from '@/utils/errors';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const LOGIN_TIMEOUT_MS = 15000;
 
 export default function LoginScreen() {
@@ -31,31 +32,37 @@ export default function LoginScreen() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animations
-  const logoScale = useRef(new Animated.Value(0)).current;
-  const formOpacity = useRef(new Animated.Value(0)).current;
-  const formTranslateY = useRef(new Animated.Value(40)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoTranslateY = useRef(new Animated.Value(-30)).current;
+  const cardOpacity = useRef(new Animated.Value(0)).current;
+  const cardTranslateY = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.spring(logoScale, {
+    Animated.parallel([
+      Animated.timing(logoOpacity, {
         toValue: 1,
-        tension: 50,
-        friction: 7,
+        duration: 600,
         useNativeDriver: true,
       }),
+      Animated.timing(logoTranslateY, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
       Animated.parallel([
-        Animated.timing(formOpacity, {
+        Animated.timing(cardOpacity, {
           toValue: 1,
-          duration: 400,
+          duration: 500,
           useNativeDriver: true,
         }),
-        Animated.timing(formTranslateY, {
+        Animated.timing(cardTranslateY, {
           toValue: 0,
-          duration: 400,
+          duration: 500,
           useNativeDriver: true,
         }),
-      ]),
-    ]).start();
+      ]).start();
+    });
   }, []);
 
   const handleLogin = useCallback(async () => {
@@ -96,170 +103,165 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Background gradient */}
+      {/* Green gradient background */}
       <LinearGradient
-        colors={['#0f172a', '#1e3a5f', '#1e40af']}
-        style={StyleSheet.absoluteFill}
+        colors={['#059669', '#10b981', '#34d399']}
+        style={styles.topSection}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-      />
-
-      {/* Decorative circles */}
-      <View style={[styles.circle, styles.circleTopRight]} />
-      <View style={[styles.circle, styles.circleBottomLeft]} />
-
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.content}>
-          {/* Logo Section */}
-          <Animated.View style={[styles.logoSection, { transform: [{ scale: logoScale }] }]}>
-            <View style={styles.logoOuter}>
-              <View style={styles.logoInner}>
-                <Feather name="map-pin" size={32} color="#ffffff" />
-              </View>
-            </View>
-            <Text style={styles.brandTitle}>Conecta</Text>
-            <Text style={styles.brandSubtitle}>Boa Esperança</Text>
-            <Text style={styles.tagline}>Cidade Inteligente</Text>
-          </Animated.View>
+        {/* Diagonal decorative lines */}
+        <View style={styles.diagonalLine1} />
+        <View style={styles.diagonalLine2} />
+        <View style={styles.diagonalLine3} />
 
-          {/* Form Card */}
-          <Animated.View
-            style={[
-              styles.formCard,
-              {
-                opacity: formOpacity,
-                transform: [{ translateY: formTranslateY }],
-              },
-            ]}
-          >
-            <YStack gap="$4" padding="$5">
-              {/* Email Field */}
-              <YStack gap="$2">
-                <Text fontSize={13} fontWeight="600" color="#475569" letterSpacing={0.5}>
-                  E-MAIL
+        {/* Logo */}
+        <Animated.View
+          style={[
+            styles.logoContainer,
+            {
+              opacity: logoOpacity,
+              transform: [{ translateY: logoTranslateY }],
+            },
+          ]}
+        >
+          <Image
+            source={require('../src/img/LOGO-PREFEITURA-CLARA.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.appName}>Conecta Sorriso</Text>
+          <Text style={styles.appTagline}>Cidade Inteligente</Text>
+        </Animated.View>
+      </LinearGradient>
+
+      {/* White card form */}
+      <KeyboardAvoidingView
+        style={styles.bottomSection}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <Animated.View
+          style={[
+            styles.formCard,
+            {
+              opacity: cardOpacity,
+              transform: [{ translateY: cardTranslateY }],
+            },
+          ]}
+        >
+          {/* Greeting */}
+          <Text style={styles.greeting}>Olá!</Text>
+          <Text style={styles.greetingSub}>Faça login para continuar</Text>
+
+          <YStack gap="$4" marginTop="$4">
+            {/* Email Field */}
+            <XStack
+              backgroundColor="#ffffff"
+              borderRadius={25}
+              borderWidth={1.5}
+              borderColor="#e2e8f0"
+              alignItems="center"
+              paddingHorizontal="$4"
+              height={50}
+            >
+              <Feather name="user" size={18} color="#94a3b8" />
+              <Input
+                flex={1}
+                placeholder="E-mail"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+                borderWidth={0}
+                backgroundColor="transparent"
+                placeholderTextColor="#94a3b8"
+                fontSize={14}
+                accessibilityLabel="E-mail"
+              />
+            </XStack>
+
+            {/* Password Field */}
+            <XStack
+              backgroundColor="#ffffff"
+              borderRadius={25}
+              borderWidth={1.5}
+              borderColor="#e2e8f0"
+              alignItems="center"
+              paddingHorizontal="$4"
+              height={50}
+            >
+              <Feather name="lock" size={18} color="#94a3b8" />
+              <Input
+                flex={1}
+                placeholder="Senha"
+                value={senha}
+                onChangeText={setSenha}
+                secureTextEntry={!showPassword}
+                editable={!isLoading}
+                borderWidth={0}
+                backgroundColor="transparent"
+                placeholderTextColor="#94a3b8"
+                fontSize={14}
+                accessibilityLabel="Senha"
+              />
+              <Feather
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={18}
+                color="#94a3b8"
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            </XStack>
+
+            {/* Error Message */}
+            {errorMessage && (
+              <XStack
+                backgroundColor="#fef2f2"
+                borderRadius={12}
+                padding="$3"
+                alignItems="center"
+                gap="$2"
+              >
+                <Feather name="alert-circle" size={16} color="#dc2626" />
+                <Text color="#dc2626" fontSize={13} flex={1}>
+                  {errorMessage}
                 </Text>
-                <XStack
-                  backgroundColor="#f8fafc"
-                  borderRadius="$4"
-                  borderWidth={1.5}
-                  borderColor="#e2e8f0"
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  focusStyle={{ borderColor: '#1e40af' }}
-                >
-                  <Feather name="mail" size={18} color="#94a3b8" />
-                  <Input
-                    flex={1}
-                    placeholder="seu@email.com"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    editable={!isLoading}
-                    size="$4"
-                    borderWidth={0}
-                    backgroundColor="transparent"
-                    placeholderTextColor="#94a3b8"
-                    accessibilityLabel="E-mail"
-                  />
-                </XStack>
-              </YStack>
+              </XStack>
+            )}
 
-              {/* Password Field */}
-              <YStack gap="$2">
-                <Text fontSize={13} fontWeight="600" color="#475569" letterSpacing={0.5}>
-                  SENHA
-                </Text>
-                <XStack
-                  backgroundColor="#f8fafc"
-                  borderRadius="$4"
-                  borderWidth={1.5}
-                  borderColor="#e2e8f0"
-                  alignItems="center"
-                  paddingHorizontal="$3"
-                  focusStyle={{ borderColor: '#1e40af' }}
-                >
-                  <Feather name="lock" size={18} color="#94a3b8" />
-                  <Input
-                    flex={1}
-                    placeholder="••••••••"
-                    value={senha}
-                    onChangeText={setSenha}
-                    secureTextEntry={!showPassword}
-                    editable={!isLoading}
-                    size="$4"
-                    borderWidth={0}
-                    backgroundColor="transparent"
-                    placeholderTextColor="#94a3b8"
-                    accessibilityLabel="Senha"
-                  />
-                  <Feather
-                    name={showPassword ? 'eye-off' : 'eye'}
-                    size={18}
-                    color="#94a3b8"
-                    onPress={() => setShowPassword(!showPassword)}
-                  />
-                </XStack>
-              </YStack>
-
-              {/* Error Message */}
-              {errorMessage && (
-                <XStack
-                  backgroundColor="#fef2f2"
-                  borderWidth={1}
-                  borderColor="#fecaca"
-                  borderRadius="$3"
-                  padding="$3"
-                  alignItems="center"
-                  gap="$2"
-                >
-                  <Feather name="alert-circle" size={16} color="#dc2626" />
-                  <Text color="#dc2626" fontSize={13} flex={1}>
-                    {errorMessage}
+            {/* Submit Button */}
+            <Button
+              onPress={handleLogin}
+              disabled={isLoading}
+              height={50}
+              backgroundColor="#059669"
+              borderRadius={25}
+              pressStyle={{ backgroundColor: '#047857', scale: 0.98 }}
+              disabledStyle={{ opacity: 0.7 }}
+              marginTop="$2"
+              accessibilityLabel="Entrar"
+            >
+              {isLoading ? (
+                <XStack alignItems="center" gap="$2">
+                  <Spinner color="#ffffff" size="small" />
+                  <Text color="#ffffff" fontWeight="700" fontSize={16}>
+                    Entrando...
                   </Text>
                 </XStack>
+              ) : (
+                <Text color="#ffffff" fontWeight="700" fontSize={16}>
+                  Entrar
+                </Text>
               )}
-
-              {/* Submit Button */}
-              <Button
-                onPress={handleLogin}
-                disabled={isLoading}
-                size="$5"
-                backgroundColor="#1e40af"
-                borderRadius="$4"
-                pressStyle={{ backgroundColor: '#1d4ed8', scale: 0.98 }}
-                disabledStyle={{ opacity: 0.7 }}
-                marginTop="$2"
-                accessibilityLabel="Entrar"
-              >
-                {isLoading ? (
-                  <XStack alignItems="center" gap="$2">
-                    <Spinner color="#ffffff" size="small" />
-                    <Text color="#ffffff" fontWeight="700" fontSize={16}>
-                      Entrando...
-                    </Text>
-                  </XStack>
-                ) : (
-                  <XStack alignItems="center" gap="$2">
-                    <Text color="#ffffff" fontWeight="700" fontSize={16}>
-                      Entrar
-                    </Text>
-                    <Feather name="arrow-right" size={18} color="#ffffff" />
-                  </XStack>
-                )}
-              </Button>
-            </YStack>
-          </Animated.View>
+            </Button>
+          </YStack>
 
           {/* Footer */}
           <Text style={styles.footer}>
-            Prefeitura Municipal de Boa Esperança
+            Prefeitura Municipal de Sorriso
           </Text>
-        </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -268,82 +270,96 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f8fafc',
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  logoSection: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  logoOuter: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  topSection: {
+    height: height * 0.4,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  logoInner: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+  diagonalLine1: {
+    position: 'absolute',
+    width: 2,
+    height: '120%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    transform: [{ rotate: '25deg' }],
+    left: '20%',
+    top: '-10%',
+  },
+  diagonalLine2: {
+    position: 'absolute',
+    width: 2,
+    height: '120%',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    transform: [{ rotate: '25deg' }],
+    left: '40%',
+    top: '-10%',
+  },
+  diagonalLine3: {
+    position: 'absolute',
+    width: 2,
+    height: '120%',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    transform: [{ rotate: '25deg' }],
+    left: '65%',
+    top: '-10%',
+  },
+  logoContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  brandTitle: {
-    fontSize: 32,
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: 12,
+  },
+  appName: {
+    fontSize: 26,
     fontWeight: '800',
     color: '#ffffff',
     letterSpacing: -0.5,
   },
-  brandSubtitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginTop: 2,
-  },
-  tagline: {
+  appTagline: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginTop: 8,
-    letterSpacing: 2,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: 4,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
+  bottomSection: {
+    flex: 1,
+    marginTop: -40,
+  },
   formCard: {
+    flex: 1,
     backgroundColor: '#ffffff',
-    borderRadius: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 28,
+    paddingTop: 36,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 12,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  greeting: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#059669',
+  },
+  greetingSub: {
+    fontSize: 15,
+    color: '#64748b',
+    marginTop: 4,
   },
   footer: {
     textAlign: 'center',
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#94a3b8',
     fontSize: 12,
-    marginTop: 32,
-  },
-  circle: {
-    position: 'absolute',
-    borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  },
-  circleTopRight: {
-    width: width * 0.8,
-    height: width * 0.8,
-    top: -width * 0.3,
-    right: -width * 0.3,
-  },
-  circleBottomLeft: {
-    width: width * 0.6,
-    height: width * 0.6,
-    bottom: -width * 0.2,
-    left: -width * 0.2,
+    marginTop: 24,
   },
 });

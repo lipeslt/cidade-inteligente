@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Alert, TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, Input, TextArea, Button, ScrollView, Spinner } from 'tamagui';
 
@@ -534,16 +534,9 @@ export default function NovaSolicitacaoScreen() {
                         gap="$3"
                         elevation={1}
                       >
-                        <YStack
-                          w={40}
-                          h={40}
-                          br={20}
-                          bg={icon.bg as any}
-                          ai="center"
-                          jc="center"
-                        >
+                        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: icon.bg, alignItems: 'center', justifyContent: 'center' }}>
                           <Feather name={icon.name as any} size={18} color={icon.color} />
-                        </YStack>
+                        </View>
                         <YStack f={1}>
                           <Text fontSize="$4" fontWeight="600" color="#1e293b">
                             {servico.nome}
@@ -628,16 +621,9 @@ export default function NovaSolicitacaoScreen() {
                       gap="$3"
                       elevation={1}
                     >
-                      <YStack
-                        w={44}
-                        h={44}
-                        br={22}
-                        bg={icon.bg as any}
-                        ai="center"
-                        jc="center"
-                      >
+                      <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: icon.bg, alignItems: 'center', justifyContent: 'center' }}>
                         <Feather name={icon.name as any} size={20} color={icon.color} />
-                      </YStack>
+                      </View>
                       <YStack f={1}>
                         <Text fontSize="$4" fontWeight="600" color="#1e293b">
                           {setor.nome}

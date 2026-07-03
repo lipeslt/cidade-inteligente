@@ -105,7 +105,7 @@ export default function LoginScreen() {
         useNativeDriver: true,
       }),
       Animated.timing(logoScale, {
-        toValue: 0.75,
+        toValue: 0.9,
         duration: 400,
         useNativeDriver: true,
       }),

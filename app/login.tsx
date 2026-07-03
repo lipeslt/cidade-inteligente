@@ -77,12 +77,12 @@ export default function LoginScreen() {
         useNativeDriver: true,
       }),
       Animated.timing(logoMoveUp, {
-        toValue: -60,
+        toValue: -(height * 0.28),
         duration: 400,
         useNativeDriver: true,
       }),
       Animated.timing(logoScale, {
-        toValue: 0.7,
+        toValue: 0.55,
         duration: 400,
         useNativeDriver: true,
       }),
@@ -92,26 +92,25 @@ export default function LoginScreen() {
   // Hide form panel (tap outside)
   const handleHideForm = useCallback(() => {
     Keyboard.dismiss();
+    setShowForm(false);
     Animated.parallel([
       Animated.spring(panelTranslateY, {
         toValue: PANEL_HEIGHT,
-        tension: 50,
+        tension: 65,
         friction: 12,
         useNativeDriver: true,
       }),
       Animated.timing(logoMoveUp, {
         toValue: 0,
-        duration: 400,
+        duration: 300,
         useNativeDriver: true,
       }),
       Animated.timing(logoScale, {
         toValue: 1,
-        duration: 400,
+        duration: 300,
         useNativeDriver: true,
       }),
-    ]).start(() => {
-      setShowForm(false);
-    });
+    ]).start();
   }, []);
 
   const handleLogin = useCallback(async () => {
@@ -161,12 +160,6 @@ export default function LoginScreen() {
         end={{ x: 1, y: 1 }}
       />
 
-      {/* Decorative diagonal lines */}
-      <View style={[styles.diagonalLine, { left: '15%' }]} />
-      <View style={[styles.diagonalLine, { left: '35%', opacity: 0.06 }]} />
-      <View style={[styles.diagonalLine, { left: '60%', opacity: 0.04 }]} />
-      <View style={[styles.diagonalLine, { left: '80%', opacity: 0.03 }]} />
-
       {/* Logo centered */}
       <TouchableWithoutFeedback onPress={showForm ? handleHideForm : undefined}>
         <View style={styles.logoArea}>
@@ -197,7 +190,7 @@ export default function LoginScreen() {
             backgroundColor="#ffffff"
             borderRadius={30}
             pressStyle={{ scale: 0.96, opacity: 0.9 }}
-            width={240}
+            width={width - 60}
             accessibilityLabel="Iniciar Sessão"
           >
             <XStack alignItems="center" gap="$2">
@@ -207,10 +200,6 @@ export default function LoginScreen() {
               <Feather name="arrow-right" size={18} color="#1e40af" />
             </XStack>
           </Button>
-
-          <Text style={styles.footerText}>
-            Prefeitura Municipal de Sorriso - MT
-          </Text>
         </Animated.View>
       )}
 
@@ -348,14 +337,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  diagonalLine: {
-    position: 'absolute',
-    width: 1.5,
-    height: '140%',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    transform: [{ rotate: '25deg' }],
-    top: '-20%',
-  },
   logoArea: {
     flex: 1,
     alignItems: 'center',
@@ -367,15 +348,10 @@ const styles = StyleSheet.create({
   },
   startBtnContainer: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 60,
     left: 0,
     right: 0,
     alignItems: 'center',
-    gap: 20,
-  },
-  footerText: {
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontSize: 12,
   },
   formPanel: {
     position: 'absolute',

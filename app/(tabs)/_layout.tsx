@@ -101,18 +101,11 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Trabalho — visível apenas para tecnico */}
+      {/* Trabalho — oculto da tab bar, acessado via navegação */}
       <Tabs.Screen
         name="trabalho"
         options={{
-          title: 'Trabalho',
-          ...(isTecnico
-            ? {
-                tabBarIcon: ({ color }) => (
-                  <Feather name="tool" size={22} color={color} />
-                ),
-              }
-            : { href: null }),
+          href: null,
         }}
       />
 

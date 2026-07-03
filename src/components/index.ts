@@ -6,5 +6,6 @@ export { PhotoPicker } from './PhotoPicker';
 export { PrioritySelector } from './PrioritySelector';
 export { SolicitacaoCard } from './SolicitacaoCard';
 export { StatusBadge } from './StatusBadge';
+export { StatusControls } from './StatusControls';
 export { StatusSelector } from './StatusSelector';
 export { TecnicoControls } from './TecnicoControls';

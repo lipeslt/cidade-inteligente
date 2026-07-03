@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack, XStack, Text, ScrollView } from 'tamagui';
-import { Pressable, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { useAuthStore } from '@/stores/authStore';
@@ -68,73 +68,65 @@ export default function HomeScreen() {
 
               <XStack gap="$3">
                 {/* Nova Solicitação */}
-                <Pressable
-                  style={{ flex: 1 }}
+                <YStack
+                  flex={1}
+                  backgroundColor="#eff6ff"
+                  borderRadius="$5"
+                  padding="$4"
+                  alignItems="center"
+                  gap="$3"
+                  borderWidth={1}
+                  borderColor="#bfdbfe"
                   onPress={() => router.push('/(tabs)/nova-solicitacao')}
+                  pressStyle={{ scale: 0.97, opacity: 0.9 }}
                 >
                   <YStack
-                    flex={1}
-                    backgroundColor="#eff6ff"
-                    borderRadius="$5"
-                    padding="$4"
+                    width={56}
+                    height={56}
+                    borderRadius={28}
+                    backgroundColor="#1e40af"
                     alignItems="center"
-                    gap="$3"
-                    borderWidth={1}
-                    borderColor="#bfdbfe"
-                    pressStyle={{ scale: 0.97, opacity: 0.9 }}
+                    justifyContent="center"
                   >
-                    <YStack
-                      width={56}
-                      height={56}
-                      borderRadius={28}
-                      backgroundColor="#1e40af"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Feather name="edit-3" size={24} color="#ffffff" />
-                    </YStack>
-                    <Text fontSize="$4" fontWeight="600" color="#1e40af" textAlign="center">
-                      Nova Solicitação
-                    </Text>
-                    <Text fontSize="$2" color="#64748b" textAlign="center">
-                      Reportar um problema
-                    </Text>
+                    <Feather name="edit-3" size={24} color="#ffffff" />
                   </YStack>
-                </Pressable>
+                  <Text fontSize="$4" fontWeight="600" color="#1e40af" textAlign="center">
+                    Nova Solicitação
+                  </Text>
+                  <Text fontSize="$2" color="#64748b" textAlign="center">
+                    Reportar um problema
+                  </Text>
+                </YStack>
 
-                <Pressable
-                  style={{ flex: 1 }}
+                <YStack
+                  flex={1}
+                  backgroundColor="#f0fdf4"
+                  borderRadius="$5"
+                  padding="$4"
+                  alignItems="center"
+                  gap="$3"
+                  borderWidth={1}
+                  borderColor="#bbf7d0"
                   onPress={() => router.push('/(tabs)/minhas-solicitacoes')}
+                  pressStyle={{ scale: 0.97, opacity: 0.9 }}
                 >
                   <YStack
-                    flex={1}
-                    backgroundColor="#f0fdf4"
-                    borderRadius="$5"
-                    padding="$4"
+                    width={56}
+                    height={56}
+                    borderRadius={28}
+                    backgroundColor="#166534"
                     alignItems="center"
-                    gap="$3"
-                    borderWidth={1}
-                    borderColor="#bbf7d0"
-                    pressStyle={{ scale: 0.97, opacity: 0.9 }}
+                    justifyContent="center"
                   >
-                    <YStack
-                      width={56}
-                      height={56}
-                      borderRadius={28}
-                      backgroundColor="#166534"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Feather name="clipboard" size={24} color="#ffffff" />
-                    </YStack>
-                    <Text fontSize="$4" fontWeight="600" color="#166534" textAlign="center">
-                      Minhas Solicitações
-                    </Text>
-                    <Text fontSize="$2" color="#64748b" textAlign="center">
-                      Acompanhar status
-                    </Text>
+                    <Feather name="clipboard" size={24} color="#ffffff" />
                   </YStack>
-                </Pressable>
+                  <Text fontSize="$4" fontWeight="600" color="#166534" textAlign="center">
+                    Minhas Solicitações
+                  </Text>
+                  <Text fontSize="$2" color="#64748b" textAlign="center">
+                    Acompanhar status
+                  </Text>
+                </YStack>
               </XStack>
             </YStack>
           </FadeInView>

@@ -41,6 +41,29 @@ export default function LoginScreen() {
   const btnOpacity = useRef(new Animated.Value(0)).current;
   const panelTranslateY = useRef(new Animated.Value(PANEL_HEIGHT)).current;
   const logoMoveUp = useRef(new Animated.Value(0)).current;
+  const panelKeyboardOffset = useRef(new Animated.Value(0)).current;
+
+  // Keyboard listeners to move panel up
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', (e) => {
+      Animated.timing(panelKeyboardOffset, {
+        toValue: -e.endCoordinates.height * 0.5,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    });
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      Animated.timing(panelKeyboardOffset, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   // Entrance animation
   useEffect(() => {
@@ -82,7 +105,7 @@ export default function LoginScreen() {
         useNativeDriver: true,
       }),
       Animated.timing(logoScale, {
-        toValue: 0.65,
+        toValue: 0.75,
         duration: 400,
         useNativeDriver: true,
       }),
@@ -207,13 +230,17 @@ export default function LoginScreen() {
       <Animated.View
         style={[
           styles.formPanel,
-          { transform: [{ translateY: panelTranslateY }] },
+          {
+            transform: [
+              { translateY: panelTranslateY },
+              { translateY: panelKeyboardOffset },
+            ],
+          },
         ]}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={{ flex: 1 }}
-          keyboardVerticalOffset={0}
         >
           {/* Handle bar */}
           <View style={styles.handleBar} />

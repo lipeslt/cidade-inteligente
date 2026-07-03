@@ -102,7 +102,6 @@ export default function HomeScreen() {
                   </YStack>
                 </Pressable>
 
-                {/* Minhas Solicitações */}
                 <Pressable
                   style={{ flex: 1 }}
                   onPress={() => router.push('/(tabs)/minhas-solicitacoes')}

@@ -34,10 +34,10 @@ function getServiceIcon(name: string): IconStyle {
   if (lower.includes('poda') || lower.includes('árvore') || lower.includes('arvore')) return { name: 'scissors', bg: '#d1fae5', color: '#065f46' };
   if (lower.includes('cão') || lower.includes('cao') || lower.includes('gato') || lower.includes('animal')) return { name: 'heart', bg: '#fce7f3', color: '#9d174d' };
   if (lower.includes('transporte') || lower.includes('trânsito') || lower.includes('transito')) return { name: 'truck', bg: '#e0e7ff', color: '#3730a3' };
-  if (lower.includes('obra')) return { name: 'hammer', bg: '#ffedd5', color: '#9a3412' };
+  if (lower.includes('obra')) return { name: 'package', bg: '#ffedd5', color: '#9a3412' };
   if (lower.includes('saúde') || lower.includes('saude')) return { name: 'activity', bg: '#fce4ec', color: '#b71c1c' };
   if (lower.includes('governo')) return { name: 'briefcase', bg: '#e8eaf6', color: '#283593' };
-  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'wind', bg: '#e8f5e9', color: '#2e7d32' };
+  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'cloud', bg: '#e8f5e9', color: '#2e7d32' };
   if (lower.includes('segurança') || lower.includes('seguranca')) return { name: 'shield', bg: '#e3f2fd', color: '#1565c0' };
   if (lower.includes('infraestrutura')) return { name: 'settings', bg: '#f3e5f5', color: '#6a1b9a' };
   if (lower.includes('agricultura')) return { name: 'sun', bg: '#fff8e1', color: '#f57f17' };
@@ -52,11 +52,11 @@ function getSetorIcon(name: string): IconStyle {
   if (lower.includes('infraestrutura')) return { name: 'settings', bg: '#f3e5f5', color: '#6a1b9a' };
   if (lower.includes('saúde') || lower.includes('saude')) return { name: 'activity', bg: '#fce4ec', color: '#b71c1c' };
   if (lower.includes('educação') || lower.includes('educacao')) return { name: 'book-open', bg: '#ede7f6', color: '#4527a0' };
-  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'wind', bg: '#e8f5e9', color: '#2e7d32' };
+  if (lower.includes('meio ambient') || lower.includes('ambiente')) return { name: 'cloud', bg: '#e8f5e9', color: '#2e7d32' };
   if (lower.includes('segurança') || lower.includes('seguranca')) return { name: 'shield', bg: '#e3f2fd', color: '#1565c0' };
   if (lower.includes('transporte') || lower.includes('trânsito') || lower.includes('transito')) return { name: 'truck', bg: '#e0e7ff', color: '#3730a3' };
   if (lower.includes('agricultura')) return { name: 'sun', bg: '#fff8e1', color: '#f57f17' };
-  if (lower.includes('obra')) return { name: 'hammer', bg: '#ffedd5', color: '#9a3412' };
+  if (lower.includes('obra')) return { name: 'package', bg: '#ffedd5', color: '#9a3412' };
   if (lower.includes('governo') || lower.includes('administra')) return { name: 'briefcase', bg: '#e8eaf6', color: '#283593' };
   if (lower.includes('social') || lower.includes('assistência') || lower.includes('assistencia')) return { name: 'users', bg: '#fce7f3', color: '#9d174d' };
   if (lower.includes('cultura') || lower.includes('esporte') || lower.includes('lazer')) return { name: 'music', bg: '#fff3e0', color: '#e65100' };
@@ -463,17 +463,9 @@ export default function NovaSolicitacaoScreen() {
               accessibilityLabel="Voltar para setores"
               accessibilityRole="button"
               activeOpacity={0.7}
+              style={{ padding: 4 }}
             >
-              <YStack
-                w={40}
-                h={40}
-                br={20}
-                bg="#f1f5f9"
-                ai="center"
-                jc="center"
-              >
-                <Feather name="arrow-left" size={20} color="#1e293b" />
-              </YStack>
+              <Feather name="arrow-left" size={24} color="#1e293b" />
             </TouchableOpacity>
             <YStack f={1}>
               <Text fontSize={20} fontWeight="700" color="#1e293b" numberOfLines={2}>
@@ -547,7 +539,7 @@ export default function NovaSolicitacaoScreen() {
                             {servico.nome_setor}
                           </Text>
                         </YStack>
-                        <Feather name="chevron-right" size={16} color="#94a3b8" />
+                        <View style={{ alignSelf: 'center' }}><Feather name="chevron-right" size={18} color="#94a3b8" /></View>
                       </XStack>
                     </TouchableOpacity>
                   );
@@ -641,7 +633,7 @@ export default function NovaSolicitacaoScreen() {
                           {setor.total_servicos}{' '}
                           {setor.total_servicos === 1 ? 'serviço' : 'serviços'}
                         </Text>
-                        <Feather name="chevron-right" size={16} color="#94a3b8" />
+                        <View style={{ alignSelf: 'center' }}><Feather name="chevron-right" size={18} color="#94a3b8" /></View>
                       </XStack>
                     </XStack>
                   </TouchableOpacity>

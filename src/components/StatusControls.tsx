@@ -150,7 +150,9 @@ function StatusControlsInner({
         }
         setStatusError(err.message);
       } else {
-        setStatusError('Erro: ' + (err as Error)?.message || 'Ocorreu um erro inesperado');
+        // Mostrar erro completo para debug
+        const errorMsg = err instanceof Error ? err.message : JSON.stringify(err);
+        setStatusError(`Erro: ${errorMsg}`);
       }
     } finally {
       setIsSubmitting(false);

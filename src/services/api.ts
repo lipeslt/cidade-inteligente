@@ -28,6 +28,8 @@ apiClient.interceptors.request.use(
 
     if (token && expiresAt && Date.now() < parseInt(expiresAt, 10)) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('[API] Token not injected - token:', !!token, 'expiresAt:', expiresAt, 'now:', Date.now());
     }
 
     return config;
@@ -58,8 +60,12 @@ apiClient.interceptors.response.use(
 
       // Erros de autenticação → limpa sessão (o auth store captura o AppError type 'auth')
       if (erro === 'token_invalido' || erro === 'usuario_nao_encontrado') {
-        await SecureStore.deleteItemAsync('token');
-        await SecureStore.deleteItemAsync('expiresAt');
+        try {
+          await SecureStore.deleteItemAsync('token');
+          await SecureStore.deleteItemAsync('expiresAt');
+        } catch (e) {
+          // Ignora erros de SecureStore
+        }
         throw new AppError('auth', ERROR_MESSAGES[erro] || 'Sessão expirada');
       }
 
@@ -68,7 +74,8 @@ apiClient.interceptors.response.use(
     }
 
     // Resposta não estruturada (erro genérico HTTP sem formato esperado)
-    throw new AppError('unexpected', NETWORK_ERROR_MESSAGES.unexpected);
+    const statusCode = error.response?.status || 'unknown';
+    throw new AppError('unexpected', `${NETWORK_ERROR_MESSAGES.unexpected} (HTTP ${statusCode})`);
   },
 );
 

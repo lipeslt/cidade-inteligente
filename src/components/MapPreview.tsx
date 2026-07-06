@@ -1,18 +1,6 @@
 import React from 'react';
-import { YStack, Text } from 'tamagui';
-
-let MapView: React.ComponentType<any> | null = null;
-let Marker: React.ComponentType<any> | null = null;
-
-try {
-  const maps = require('react-native-maps');
-  MapView = maps.default;
-  Marker = maps.Marker;
-} catch {
-  // react-native-maps não disponível (ambiente de teste)
-  MapView = null;
-  Marker = null;
-}
+import { View, Text, StyleSheet, Linking, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 export interface MapPreviewProps {
   latitude: number;
@@ -21,48 +9,77 @@ export interface MapPreviewProps {
 }
 
 /**
- * Componente de preview de mapa compacto com um marker.
- * Se react-native-maps não estiver disponível (ex: testes), exibe placeholder com coordenadas.
+ * Componente de preview de mapa compacto.
+ * Usa um fallback visual com link para o Google Maps ao invés de
+ * react-native-maps nativo (que crasha sem API key no APK).
  */
 export function MapPreview({ latitude, longitude, height = 200 }: MapPreviewProps) {
-  if (!MapView || !Marker) {
-    return (
-      <YStack
-        height={height}
-        borderRadius="$3"
-        backgroundColor="$gray4"
-        alignItems="center"
-        justifyContent="center"
-        borderWidth={1}
-        borderColor="$gray6"
-      >
-        <Text fontSize="$3" color="$gray9">
-          📍 Mapa
-        </Text>
-        <Text fontSize="$2" color="$gray8" marginTop="$1">
-          Lat: {latitude.toFixed(6)}, Lng: {longitude.toFixed(6)}
-        </Text>
-      </YStack>
-    );
-  }
+  const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+  const handleOpenMaps = () => {
+    Linking.openURL(mapsUrl);
+  };
 
   return (
-    <YStack height={height} borderRadius="$3" overflow="hidden">
-      <MapView
-        style={{ flex: 1 }}
-        initialRegion={{
-          latitude,
-          longitude,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
-        }}
-        scrollEnabled={false}
-        zoomEnabled={false}
-        pitchEnabled={false}
-        rotateEnabled={false}
-      >
-        <Marker coordinate={{ latitude, longitude }} />
-      </MapView>
-    </YStack>
+    <TouchableOpacity
+      onPress={handleOpenMaps}
+      activeOpacity={0.8}
+      accessibilityLabel="Abrir localização no Google Maps"
+      accessibilityRole="button"
+    >
+      <View style={[styles.container, { height }]}>
+        <View style={styles.iconContainer}>
+          <Feather name="map-pin" size={32} color="#1e40af" />
+        </View>
+        <Text style={styles.coordsText}>
+          {latitude.toFixed(6)}, {longitude.toFixed(6)}
+        </Text>
+        <View style={styles.openButton}>
+          <Feather name="external-link" size={14} color="#1e40af" />
+          <Text style={styles.openText}>Abrir no Google Maps</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#dbeafe',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#dbeafe',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coordsText: {
+    fontSize: 13,
+    color: '#475569',
+    fontWeight: '500',
+  },
+  openButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#1e40af',
+  },
+  openText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1e40af',
+  },
+});

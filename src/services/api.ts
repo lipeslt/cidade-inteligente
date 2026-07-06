@@ -28,8 +28,6 @@ apiClient.interceptors.request.use(
 
     if (token && expiresAt && Date.now() < parseInt(expiresAt, 10)) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn('[API] Token not injected - token:', !!token, 'expiresAt:', expiresAt, 'now:', Date.now());
     }
 
     return config;

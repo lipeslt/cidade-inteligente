@@ -1,13 +1,25 @@
 {
   "expo": {
-    "name": "Conecta Boa Esperança",
-    "slug": "conecta-boa-esperanca",
+    "name": "Cidade Inteligente",
+    "slug": "cidade-inteligente",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "conecta-boa-esperanca",
+    "scheme": "cidade-inteligente",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "icon": "./assets/icon.jpeg",
     "platforms": ["ios", "android"],
+    "android": {
+      "package": "com.sorriso.cidadeinteligente",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.jpeg",
+        "backgroundColor": "#1e40af"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.sorriso.cidadeinteligente",
+      "supportsTablet": false
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store",

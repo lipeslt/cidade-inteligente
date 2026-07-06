@@ -43,7 +43,8 @@
           "photosPermission": "Permitir acesso às fotos para anexar imagens à solicitação.",
           "cameraPermission": "Permitir acesso à câmera para tirar fotos do problema reportado."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "router": {},

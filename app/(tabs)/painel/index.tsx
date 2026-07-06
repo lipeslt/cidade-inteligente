@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 import { useSolicitacoesStore } from '@/stores/solicitacoesStore';
 import { computeStatusCounts, filterByStatus } from '@/utils/roles';
@@ -21,13 +22,14 @@ const STATUS_CARDS: {
   status: StatusSolicitacao;
   label: string;
   color: string;
+  icon: keyof typeof Feather.glyphMap;
 }[] = [
-  { status: 'aberto', label: 'Aberto', color: '#3b82f6' },
-  { status: 'em_analise', label: 'Em Análise', color: '#f97316' },
-  { status: 'em_andamento', label: 'Em Andamento', color: '#eab308' },
-  { status: 'resolvido', label: 'Resolvido', color: '#22c55e' },
-  { status: 'fechado', label: 'Fechado', color: '#6b7280' },
-  { status: 'cancelado', label: 'Cancelado', color: '#ef4444' },
+  { status: 'aberto', label: 'Aberto', color: '#3b82f6', icon: 'circle' },
+  { status: 'em_analise', label: 'Em Análise', color: '#f97316', icon: 'search' },
+  { status: 'em_andamento', label: 'Em Andamento', color: '#eab308', icon: 'loader' },
+  { status: 'resolvido', label: 'Resolvido', color: '#22c55e', icon: 'check-circle' },
+  { status: 'fechado', label: 'Fechado', color: '#6b7280', icon: 'archive' },
+  { status: 'cancelado', label: 'Cancelado', color: '#ef4444', icon: 'x-circle' },
 ];
 
 export default function PainelScreen() {
@@ -76,15 +78,16 @@ export default function PainelScreen() {
 
   const renderStatusCards = () => (
     <View style={styles.cardsGrid}>
-      {STATUS_CARDS.map(({ status, label, color }) => {
+      {STATUS_CARDS.map(({ status, label, color, icon }) => {
         const isActive = activeFilter === status;
         return (
           <TouchableOpacity
             key={status}
             style={[
               styles.statusCard,
-              { borderColor: color },
-              isActive && { backgroundColor: color },
+              isActive
+                ? { backgroundColor: color, borderColor: color }
+                : { borderColor: color + '40' },
             ]}
             onPress={() => handleCardPress(status)}
             activeOpacity={0.7}
@@ -92,6 +95,12 @@ export default function PainelScreen() {
             accessibilityLabel={`${label}: ${statusCounts[status]} solicitações`}
             accessibilityState={{ selected: isActive }}
           >
+            <Feather
+              name={icon}
+              size={18}
+              color={isActive ? '#ffffff' : color}
+              style={styles.statusCardIcon}
+            />
             <Text
               style={[
                 styles.statusCardCount,
@@ -103,7 +112,7 @@ export default function PainelScreen() {
             <Text
               style={[
                 styles.statusCardLabel,
-                { color: isActive ? '#ffffff' : '#64748b' },
+                { color: isActive ? '#ffffffcc' : '#64748b' },
               ]}
             >
               {label}
@@ -117,16 +126,31 @@ export default function PainelScreen() {
   const renderHeader = () => (
     <View style={styles.headerSection}>
       <View style={styles.header}>
-        <Text style={styles.title}>Painel Administrativo</Text>
-        <Text style={styles.subtitle}>Visão geral de todas as solicitações</Text>
+        <View style={styles.headerRow}>
+          <View style={styles.headerIconCircle}>
+            <Feather name="bar-chart-2" size={22} color="#ffffff" />
+          </View>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.title}>Painel Administrativo</Text>
+            <Text style={styles.subtitle}>Visão geral de todas as solicitações</Text>
+          </View>
+        </View>
       </View>
       {renderStatusCards()}
       {activeFilter && (
         <View style={styles.filterIndicator}>
-          <Text style={styles.filterText}>
-            Filtrando por: {STATUS_CARDS.find((c) => c.status === activeFilter)?.label}
-          </Text>
-          <TouchableOpacity onPress={() => setActiveFilter(undefined)}>
+          <View style={styles.filterIndicatorLeft}>
+            <Feather name="filter" size={14} color="#1e40af" />
+            <Text style={styles.filterText}>
+              Filtrando: {STATUS_CARDS.find((c) => c.status === activeFilter)?.label}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setActiveFilter(undefined)}
+            style={styles.clearFilterButton}
+            activeOpacity={0.7}
+          >
+            <Feather name="x" size={14} color="#1e40af" />
             <Text style={styles.clearFilter}>Limpar</Text>
           </TouchableOpacity>
         </View>
@@ -157,7 +181,15 @@ export default function PainelScreen() {
     if (isLoading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Nenhuma solicitação encontrada</Text>
+        <View style={styles.emptyIconCircle}>
+          <Feather name="inbox" size={32} color="#94a3b8" />
+        </View>
+        <Text style={styles.emptyTitle}>Nenhuma solicitação encontrada</Text>
+        <Text style={styles.emptySubtext}>
+          {activeFilter
+            ? 'Tente limpar o filtro para ver todos os itens'
+            : 'As solicitações aparecerão aqui quando forem criadas'}
+        </Text>
       </View>
     );
   };
@@ -166,17 +198,29 @@ export default function PainelScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
-          <Text style={styles.title}>Painel Administrativo</Text>
-          <Text style={styles.subtitle}>Visão geral de todas as solicitações</Text>
+          <View style={styles.headerRow}>
+            <View style={styles.headerIconCircle}>
+              <Feather name="bar-chart-2" size={22} color="#ffffff" />
+            </View>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.title}>Painel Administrativo</Text>
+              <Text style={styles.subtitle}>Visão geral de todas as solicitações</Text>
+            </View>
+          </View>
         </View>
         <View style={styles.errorContainer}>
+          <View style={styles.errorIconCircle}>
+            <Feather name="alert-triangle" size={28} color="#ef4444" />
+          </View>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={() => fetchSolicitacoes({ page: 1, per_page: 20 })}
             accessibilityRole="button"
             accessibilityLabel="Tentar novamente"
+            activeOpacity={0.7}
           >
+            <Feather name="refresh-cw" size={16} color="#ffffff" />
             <Text style={styles.retryButtonText}>Tentar novamente</Text>
           </TouchableOpacity>
         </View>
@@ -216,12 +260,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   headerSection: {
-    paddingBottom: 12,
+    paddingBottom: 16,
   },
   header: {
     paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  headerIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#1e40af',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 24,
@@ -231,27 +291,30 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: '#64748b',
-    marginTop: 4,
+    marginTop: 2,
   },
   cardsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 12,
-    gap: 8,
+    gap: 10,
   },
   statusCard: {
     width: '47%',
     flexGrow: 1,
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    borderWidth: 2,
-    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    padding: 16,
     alignItems: 'center',
-    elevation: 1,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+  },
+  statusCardIcon: {
+    marginBottom: 6,
   },
   statusCardCount: {
     fontSize: 28,
@@ -267,22 +330,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: 16,
-    marginTop: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    marginTop: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     backgroundColor: '#e0e7ff',
-    borderRadius: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#c7d2fe',
+  },
+  filterIndicatorLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   filterText: {
     fontSize: 13,
     color: '#1e40af',
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  clearFilterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
   },
   clearFilter: {
     fontSize: 13,
     color: '#1e40af',
     fontWeight: '600',
-    textDecorationLine: 'underline',
   },
   listContent: {
     paddingBottom: 24,
@@ -292,12 +370,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyContainer: {
-    paddingVertical: 40,
+    paddingVertical: 60,
     alignItems: 'center',
+    paddingHorizontal: 32,
   },
-  emptyText: {
-    fontSize: 15,
-    color: '#64748b',
+  emptyIconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#f1f5f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 6,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   errorContainer: {
     flex: 1,
@@ -305,17 +401,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
   },
+  errorIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#fef2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
   errorText: {
     fontSize: 15,
     color: '#ef4444',
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     backgroundColor: '#1e40af',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   retryButtonText: {
     color: '#ffffff',

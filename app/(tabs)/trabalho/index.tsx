@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 
 import { useSolicitacoesStore } from '@/stores/solicitacoesStore';
 import { SolicitacaoCard } from '@/components/SolicitacaoCard';
@@ -101,6 +102,9 @@ export default function TrabalhoScreen() {
               accessibilityLabel={`Filtrar por ${label}`}
               accessibilityState={{ selected: isActive }}
             >
+              {isActive && (
+                <Feather name="check" size={13} color="#ffffff" />
+              )}
               <Text
                 style={[
                   styles.filterChipText,
@@ -120,9 +124,7 @@ export default function TrabalhoScreen() {
     ({ item }: { item: Solicitacao }) => {
       const highlighted = shouldHighlight(item.status);
       return (
-        <View
-          style={highlighted ? styles.highlightedItem : undefined}
-        >
+        <View style={highlighted ? styles.highlightedItem : undefined}>
           <SolicitacaoCard
             solicitacao={item}
             onPress={() => handleItemPress(item)}
@@ -136,8 +138,22 @@ export default function TrabalhoScreen() {
   const renderHeader = () => (
     <View>
       <View style={styles.header}>
-        <Text style={styles.title}>Meu Trabalho</Text>
-        <Text style={styles.subtitle}>Solicitações para atendimento</Text>
+        <View style={styles.headerRow}>
+          <View style={styles.headerIconCircle}>
+            <Feather name="tool" size={22} color="#ffffff" />
+          </View>
+          <View style={styles.headerTextContainer}>
+            <View style={styles.titleRow}>
+              <Text style={styles.title}>Meu Trabalho</Text>
+              {solicitacoes.length > 0 && (
+                <View style={styles.countBadge}>
+                  <Text style={styles.countBadgeText}>{solicitacoes.length}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.subtitle}>Solicitações para atendimento</Text>
+          </View>
+        </View>
       </View>
       {renderFilterBar()}
     </View>
@@ -156,7 +172,15 @@ export default function TrabalhoScreen() {
     if (isLoading) return null;
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Nenhuma solicitação encontrada</Text>
+        <View style={styles.emptyIconCircle}>
+          <Feather name="inbox" size={32} color="#94a3b8" />
+        </View>
+        <Text style={styles.emptyTitle}>Nenhuma solicitação encontrada</Text>
+        <Text style={styles.emptySubtext}>
+          {activeFilter
+            ? 'Tente outro filtro para ver mais resultados'
+            : 'Novas solicitações designadas aparecerão aqui'}
+        </Text>
       </View>
     );
   };
@@ -165,10 +189,20 @@ export default function TrabalhoScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
-          <Text style={styles.title}>Meu Trabalho</Text>
-          <Text style={styles.subtitle}>Solicitações para atendimento</Text>
+          <View style={styles.headerRow}>
+            <View style={styles.headerIconCircle}>
+              <Feather name="tool" size={22} color="#ffffff" />
+            </View>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.title}>Meu Trabalho</Text>
+              <Text style={styles.subtitle}>Solicitações para atendimento</Text>
+            </View>
+          </View>
         </View>
         <View style={styles.errorContainer}>
+          <View style={styles.errorIconCircle}>
+            <Feather name="alert-triangle" size={28} color="#ef4444" />
+          </View>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity
             style={styles.retryButton}
@@ -177,6 +211,7 @@ export default function TrabalhoScreen() {
             accessibilityRole="button"
             accessibilityLabel="Tentar novamente"
           >
+            <Feather name="refresh-cw" size={16} color="#ffffff" />
             <Text style={styles.retryButtonText}>Tentar novamente</Text>
           </TouchableOpacity>
         </View>
@@ -217,37 +252,81 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 20,
     paddingBottom: 8,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  headerIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#d97706',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
     color: '#1e293b',
   },
+  countBadge: {
+    backgroundColor: '#1e40af',
+    borderRadius: 12,
+    paddingHorizontal: 9,
+    paddingVertical: 2,
+    minWidth: 28,
+    alignItems: 'center',
+  },
+  countBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
   subtitle: {
     fontSize: 14,
     color: '#64748b',
-    marginTop: 4,
+    marginTop: 2,
   },
   filterBarContainer: {
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
   filterBarContent: {
     paddingHorizontal: 16,
     gap: 8,
   },
   filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
     borderRadius: 20,
     backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: '#e2e8f0',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
   },
   filterChipActive: {
     backgroundColor: '#1e40af',
     borderColor: '#1e40af',
+    elevation: 2,
+    shadowOpacity: 0.1,
   },
   filterChipText: {
     fontSize: 13,
@@ -256,8 +335,10 @@ const styles = StyleSheet.create({
   },
   filterChipTextActive: {
     color: '#ffffff',
+    fontWeight: '600',
   },
   highlightedItem: {
+    backgroundColor: '#fffbeb',
     borderLeftWidth: 3,
     borderLeftColor: '#f59e0b',
     borderRadius: 4,
@@ -271,12 +352,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyContainer: {
-    paddingVertical: 40,
+    paddingVertical: 60,
     alignItems: 'center',
+    paddingHorizontal: 32,
   },
-  emptyText: {
-    fontSize: 15,
-    color: '#64748b',
+  emptyIconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#f1f5f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 6,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#94a3b8',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   errorContainer: {
     flex: 1,
@@ -284,17 +383,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
   },
+  errorIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#fef2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
   errorText: {
     fontSize: 15,
     color: '#ef4444',
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     backgroundColor: '#1e40af',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   retryButtonText: {
     color: '#ffffff',

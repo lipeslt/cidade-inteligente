@@ -125,7 +125,7 @@ function StatusControlsInner({
     try {
       await alterarStatus(idSolicitacao, {
         status: selectedStatus,
-        comentario: comentario || undefined,
+        ...(comentario.trim() ? { comentario: comentario.trim() } : {}),
       });
 
       // Sucesso: mostrar confirmação por 3s e notificar pai
@@ -150,7 +150,7 @@ function StatusControlsInner({
         }
         setStatusError(err.message);
       } else {
-        setStatusError('Ocorreu um erro inesperado. Tente novamente');
+        setStatusError('Erro: ' + (err as Error)?.message || 'Ocorreu um erro inesperado');
       }
     } finally {
       setIsSubmitting(false);

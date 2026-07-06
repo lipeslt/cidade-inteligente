@@ -81,3 +81,15 @@ function trimTrailingZeros(value: string): string {
   }
   return result;
 }
+
+/**
+ * Garante que uma URL use HTTPS ao invés de HTTP.
+ * Necessário porque a API retorna URLs de fotos com http://
+ * mas o Android bloqueia requisições HTTP por padrão.
+ */
+export function ensureHttps(url: string): string {
+  if (url && url.startsWith('http://')) {
+    return url.replace('http://', 'https://');
+  }
+  return url;
+}

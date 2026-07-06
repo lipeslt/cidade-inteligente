@@ -17,6 +17,7 @@ import { StatusBadge, MapPreview, ErrorMessage, StatusControls } from '@/compone
 import { detalhar } from '@/services/solicitacoes';
 import { useAuthStore } from '@/stores/authStore';
 import { shouldShowStatusControls, shouldShowLocationButton } from '@/utils/roles';
+import { ensureHttps } from '@/utils/formatters';
 import { AppError } from '@/utils/errors';
 import type { SolicitacaoDetalhe, Foto } from '@/types';
 
@@ -241,7 +242,7 @@ export default function DetalhesSolicitacaoScreen() {
         >
           {selectedPhoto && (
             <Image
-              source={{ uri: selectedPhoto.url }}
+              source={{ uri: ensureHttps(selectedPhoto.url) }}
               style={styles.modalImage}
               resizeMode="contain"
               accessibilityLabel={`Foto: ${selectedPhoto.metadata?.original_name || 'imagem'}`}
@@ -366,7 +367,7 @@ export default function DetalhesSolicitacaoScreen() {
                   accessibilityRole="button"
                 >
                   <Image
-                    source={{ uri: foto.url }}
+                    source={{ uri: ensureHttps(foto.url) }}
                     style={styles.photoThumb}
                   />
                 </TouchableOpacity>
